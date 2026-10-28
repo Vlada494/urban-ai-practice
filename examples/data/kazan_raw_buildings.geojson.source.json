@@ -1,0 +1,22 @@
+{
+  "retrieved_at_utc": "2026-10-27T22:33:02.765961+00:00",
+  "source": "OpenStreetMap / OpenStreetMap France regional PBF",
+  "extract": {
+    "source": "OpenStreetMap France regional extract",
+    "url": "https://download.openstreetmap.fr/extracts/russia/volga_federal_district/tatarstan_republic-latest.osm.pbf",
+    "md5_url": "https://download.openstreetmap.fr/extracts/russia/volga_federal_district/tatarstan_republic.osm.pbf.md5",
+    "md5": "1e8ee33c66247673853a96b49b6580b7",
+    "bytes": 96367609,
+    "last_modified": "Tue, 27 Oct 2026 00:06:13 GMT",
+    "retrieved_at_utc": "2026-10-27T22:32:14.646543+00:00"
+  },
+  "objects": 102532,
+  "group": "buildings",
+  "boundary_filter": "Full geometry intersects saved Kazan boundary",
+  "geometry_quality_for_region": {
+    "geometry_errors": 0,
+    "geometry_error_examples": [],
+    "repaired_geometries": 0
+  },
+  "attribution": "https://www.openstreetmap.org/copyright"
+}

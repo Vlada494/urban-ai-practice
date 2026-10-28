@@ -1,0 +1,10 @@
+{
+  "retrieved_at_utc": "2026-10-27T20:46:20.562170+00:00",
+  "source": "OpenStreetMap / Overpass",
+  "endpoint": "https://overpass-api.de/api",
+  "tags": {
+    "railway": "rail"
+  },
+  "objects": 805,
+  "attribution": "https://www.openstreetmap.org/copyright"
+}

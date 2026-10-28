@@ -1,0 +1,48 @@
+УЧЕБНЫЙ ПРОЕКТ «ИИ В УРБАНИСТИКЕ»
+
+Это основная папка для домашнего задания. Старое окружение в соседней
+папке python-homework на Python 3.14 для этого курса использовать не нужно.
+
+1. Дважды нажмите OPEN_PROJECT.cmd, чтобы открыть проект в VS Code на русском.
+2. Откройте Терминал → Создать терминал.
+3. Проверьте: python --version. Должен отображаться Python 3.12.10.
+4. Запустите opencode. Если PowerShell блокирует файл .ps1, введите opencode.cmd.
+   Отдельно запустить OpenCode можно двойным нажатием START_OPENCODE.cmd.
+
+В OpenCode настроена бесплатная модель opencode/glm-5.3-flash-free.
+Это рабочий начальный вариант из списка OpenCode, а не подтверждение,
+что именно эту модель требует преподаватель. Доступность бесплатной модели
+зависит от сервиса. Модель выбирается через /models, свой сервис — через /connect.
+
+Режим Plan выбран по умолчанию. В нём сначала обсудите план работы.
+Клавиша Tab переключает Plan и Build.
+
+ИНТЕРПРЕТАТОР ПРОЕКТА
+.venv\Scripts\python.exe
+
+В ноутбуках выбирайте это же окружение .venv / Python 3.12.
+В examples/00_environment_check.ipynb сохранена проверка запуска ноутбука.
+
+УСТАНОВКА ЗАВИСИМОСТЕЙ
+В активированном окружении из этой папки: make install-dev
+Зависимости находятся в pyproject.toml. BlocksNet закреплён на 1.0.0a9.
+Точные версии установленного окружения записаны в requirements-lock.txt.
+
+ПРОВЕРКА
+python hello.py
+python check_environment.py
+
+ССЫЛКИ
+Практика 1: https://mvin8.github.io/ai-technologies-in-urbanism/content/practice/practice-01.html
+Практика 2 / ДЗ 1: https://mvin8.github.io/ai-technologies-in-urbanism/content/practice/practice-02.html
+Оба ДЗ: https://mvin8.github.io/ai-technologies-in-urbanism/content/homework/homework.html
+
+ДЗ 1 — КАЗАНЬ
+Ноутбук подготовлен: examples/kazan_homework.ipynb.
+Откройте его в VS Code и выберите ядро Python 3.12 (urban-ai-practice) / .venv.
+Нажмите ▶ слева у первой ячейки с кодом. Должно появиться:
+OK: библиотеки импортированы
+Затем запускайте ячейки по одной до раздела «ОСТАНОВКА ДЛЯ ПРОВЕРКИ».
+Сохраните ноутбук Ctrl+S и покажите карту кварталов в чате.
+Данные города и расчёты студент запускает самостоятельно в ноутбуке.
+Код проверен на искусственной карте; результатов Казани пока нет.

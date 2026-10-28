@@ -1,0 +1,455 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "is_living": false,
+        "number_of_floors": 1.0,
+        "footprint_area": 107.46370967061,
+        "build_floor_area": 107.46370967061,
+        "living_area": 0.0,
+        "non_living_area": 107.46370967061,
+        "population": 0.0,
+        "floors_imputed_count": 1,
+        "unknown_use_count": 1,
+        "population_estimated_count": 0,
+        "count": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          49.06328527675913,
+          55.88441899966451
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "is_living": false,
+        "number_of_floors": 1.0,
+        "footprint_area": 107.35039553251312,
+        "build_floor_area": 107.35039553251312,
+        "living_area": 0.0,
+        "non_living_area": 107.35039553251312,
+        "population": 0.0,
+        "floors_imputed_count": 1,
+        "unknown_use_count": 1,
+        "population_estimated_count": 0,
+        "count": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          49.062119376761366,
+          55.88472874966433
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "is_living": false,
+        "number_of_floors": 4.0,
+        "footprint_area": 7.6426445849116185,
+        "build_floor_area": 30.570578339646474,
+        "living_area": 0.0,
+        "non_living_area": 30.570578339646474,
+        "population": 0.0,
+        "floors_imputed_count": 0,
+        "unknown_use_count": 1,
+        "population_estimated_count": 0,
+        "count": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          49.005081695379275,
+          55.790626000894726
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "is_living": true,
+        "number_of_floors": 1.0,
+        "footprint_area": 133.3952319311332,
+        "build_floor_area": 133.3952319311332,
+        "living_area": 120.05570873801987,
+        "non_living_area": 13.339523193113322,
+        "population": 4.0,
+        "floors_imputed_count": 0,
+        "unknown_use_count": 0,
+        "population_estimated_count": 1,
+        "count": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          48.961948065067276,
+          55.9078786519464
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "is_living": false,
+        "number_of_floors": 1.0,
+        "footprint_area": 754.4366026204771,
+        "build_floor_area": 754.4366026204771,
+        "living_area": 0.0,
+        "non_living_area": 754.4366026204771,
+        "population": 0.0,
+        "floors_imputed_count": 1,
+        "unknown_use_count": 0,
+        "population_estimated_count": 0,
+        "count": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          49.22806267495952,
+          55.88759364643072
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "is_living": false,
+        "number_of_floors": 2.0,
+        "footprint_area": 463.59410414250397,
+        "build_floor_area": 927.1882082850079,
+        "living_area": 0.0,
+        "non_living_area": 927.1882082850079,
+        "population": 0.0,
+        "floors_imputed_count": 0,
+        "unknown_use_count": 0,
+        "population_estimated_count": 0,
+        "count": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          49.091963736957105,
+          55.739880397400654
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "is_living": false,
+        "number_of_floors": 1.0,
+        "footprint_area": 163.341055687624,
+        "build_floor_area": 163.341055687624,
+        "living_area": 0.0,
+        "non_living_area": 163.341055687624,
+        "population": 0.0,
+        "floors_imputed_count": 1,
+        "unknown_use_count": 1,
+        "population_estimated_count": 0,
+        "count": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          49.208064802166994,
+          55.92497631254938
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "is_living": false,
+        "number_of_floors": 1.0,
+        "footprint_area": 26.370790835637237,
+        "build_floor_area": 26.370790835637237,
+        "living_area": 0.0,
+        "non_living_area": 26.370790835637237,
+        "population": 0.0,
+        "floors_imputed_count": 1,
+        "unknown_use_count": 0,
+        "population_estimated_count": 0,
+        "count": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          49.2297379281768,
+          55.91237299969366
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "is_living": false,
+        "number_of_floors": 1.0,
+        "footprint_area": 99.1847041508568,
+        "build_floor_area": 99.1847041508568,
+        "living_area": 0.0,
+        "non_living_area": 99.1847041508568,
+        "population": 0.0,
+        "floors_imputed_count": 1,
+        "unknown_use_count": 1,
+        "population_estimated_count": 0,
+        "count": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          49.194428949991845,
+          55.87843490002614
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "is_living": false,
+        "number_of_floors": 1.0,
+        "footprint_area": 32.21813262644824,
+        "build_floor_area": 32.21813262644824,
+        "living_area": 0.0,
+        "non_living_area": 32.21813262644824,
+        "population": 0.0,
+        "floors_imputed_count": 1,
+        "unknown_use_count": 1,
+        "population_estimated_count": 0,
+        "count": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          49.2294392000003,
+          55.90292715001863
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "is_living": false,
+        "number_of_floors": 1.0,
+        "footprint_area": 240.49007674855383,
+        "build_floor_area": 240.49007674855383,
+        "living_area": 0.0,
+        "non_living_area": 240.49007674855383,
+        "population": 0.0,
+        "floors_imputed_count": 0,
+        "unknown_use_count": 0,
+        "population_estimated_count": 0,
+        "count": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          49.13803076303993,
+          55.83360825686655
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "is_living": false,
+        "number_of_floors": 1.0,
+        "footprint_area": 160.22179341075514,
+        "build_floor_area": 160.22179341075514,
+        "living_area": 0.0,
+        "non_living_area": 160.22179341075514,
+        "population": 0.0,
+        "floors_imputed_count": 0,
+        "unknown_use_count": 1,
+        "population_estimated_count": 0,
+        "count": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          49.13506341173068,
+          55.76205595096539
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "is_living": false,
+        "number_of_floors": 1.0,
+        "footprint_area": 16.009735572883883,
+        "build_floor_area": 16.009735572883883,
+        "living_area": 0.0,
+        "non_living_area": 16.009735572883883,
+        "population": 0.0,
+        "floors_imputed_count": 1,
+        "unknown_use_count": 1,
+        "population_estimated_count": 0,
+        "count": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          49.13458544999831,
+          55.90532715001078
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "is_living": false,
+        "number_of_floors": 1.0,
+        "footprint_area": 64.18039216016238,
+        "build_floor_area": 64.18039216016238,
+        "living_area": 0.0,
+        "non_living_area": 64.18039216016238,
+        "population": 0.0,
+        "floors_imputed_count": 1,
+        "unknown_use_count": 1,
+        "population_estimated_count": 0,
+        "count": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          49.08963885000765,
+          55.78160165002227
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "is_living": false,
+        "number_of_floors": 1.0,
+        "footprint_area": 35.87377154354856,
+        "build_floor_area": 35.87377154354856,
+        "living_area": 0.0,
+        "non_living_area": 35.87377154354856,
+        "population": 0.0,
+        "floors_imputed_count": 0,
+        "unknown_use_count": 1,
+        "population_estimated_count": 0,
+        "count": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          49.298723213467454,
+          55.721197300211536
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "is_living": true,
+        "number_of_floors": 2.0,
+        "footprint_area": 99.91377289252281,
+        "build_floor_area": 199.82754578504563,
+        "living_area": 179.84479120654106,
+        "non_living_area": 19.98275457850457,
+        "population": 5.0,
+        "floors_imputed_count": 0,
+        "unknown_use_count": 0,
+        "population_estimated_count": 1,
+        "count": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          49.21248655001622,
+          55.67142030004695
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "is_living": false,
+        "number_of_floors": 2.0,
+        "footprint_area": 98.31143126019897,
+        "build_floor_area": 196.62286252039794,
+        "living_area": 0.0,
+        "non_living_area": 196.62286252039794,
+        "population": 0.0,
+        "floors_imputed_count": 0,
+        "unknown_use_count": 1,
+        "population_estimated_count": 0,
+        "count": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          48.96836349999349,
+          55.800358000026804
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "is_living": false,
+        "number_of_floors": 1.0,
+        "footprint_area": 85.35456896157739,
+        "build_floor_area": 85.35456896157739,
+        "living_area": 0.0,
+        "non_living_area": 85.35456896157739,
+        "population": 0.0,
+        "floors_imputed_count": 1,
+        "unknown_use_count": 1,
+        "population_estimated_count": 0,
+        "count": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          49.2052450681578,
+          55.69841390030055
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "is_living": false,
+        "number_of_floors": 1.0,
+        "footprint_area": 133.2127267150754,
+        "build_floor_area": 133.2127267150754,
+        "living_area": 0.0,
+        "non_living_area": 133.2127267150754,
+        "population": 0.0,
+        "floors_imputed_count": 1,
+        "unknown_use_count": 1,
+        "population_estimated_count": 0,
+        "count": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          49.181926370539294,
+          55.833119400349986
+        ]
+      }
+    }
+  ],
+  "field_names": [
+    "is_living",
+    "number_of_floors",
+    "footprint_area",
+    "build_floor_area",
+    "living_area",
+    "non_living_area",
+    "population",
+    "floors_imputed_count",
+    "unknown_use_count",
+    "population_estimated_count",
+    "count"
+  ]
+}

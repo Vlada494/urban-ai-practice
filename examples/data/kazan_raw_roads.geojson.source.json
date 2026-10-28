@@ -1,0 +1,27 @@
+{
+  "retrieved_at_utc": "2026-10-27T20:33:23.707291+00:00",
+  "source": "OpenStreetMap / Overpass",
+  "tags": {
+    "highway": [
+      "construction",
+      "living_street",
+      "motorway",
+      "motorway_link",
+      "pedestrian",
+      "primary",
+      "primary_link",
+      "residential",
+      "road",
+      "secondary",
+      "secondary_link",
+      "tertiary",
+      "tertiary_link",
+      "track",
+      "trunk",
+      "trunk_link",
+      "unclassified"
+    ]
+  },
+  "objects": 10776,
+  "attribution": "https://www.openstreetmap.org/copyright"
+}

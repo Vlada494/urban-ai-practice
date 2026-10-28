@@ -1,0 +1,22 @@
+{
+  "retrieved_at_utc": "2026-10-27T20:23:45.370522+00:00",
+  "source": "OpenStreetMap / Overpass",
+  "tags": {
+    "natural": [
+      "water",
+      "bay"
+    ],
+    "waterway": [
+      "river",
+      "canal",
+      "ditch"
+    ],
+    "water": true,
+    "landuse": [
+      "basin",
+      "reservoir"
+    ]
+  },
+  "objects": 432,
+  "attribution": "https://www.openstreetmap.org/copyright"
+}

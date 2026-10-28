@@ -42,3 +42,20 @@ ENV/
 
 # PyCharm env
 .idea
+
+# Download caches; keep the GeoJSON homework results available for GitHub.
+/examples/data/osm_cache/
+/examples/data/russia-RUS_graphml.zip
+/examples/data/kazan-5901.graphml
+/examples/data/*.part
+/examples/data/extract_cache/
+/examples/data/*.writing
+/examples/data/overture/
+/examples/data/kazan_overture_drive.graphml
+/submission/
+
+# Files over GitHub's 100 MB limit; delivered via GitHub Release (submission zip)
+/examples/data/kazan_acc_mx.csv
+/examples/data/kazan_acc_mx.parquet
+/examples/data/kazan_buildings.geojson
+/examples/data/kazan_raw_buildings.geojson

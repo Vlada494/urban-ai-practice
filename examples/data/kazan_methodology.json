@@ -1,0 +1,221 @@
+{
+  "raw_data_sources": {
+    "kazan_raw_buildings.geojson.source.json": {
+      "retrieved_at_utc": "2026-10-27T22:33:02.765961+00:00",
+      "source": "OpenStreetMap / OpenStreetMap France regional PBF",
+      "extract": {
+        "source": "OpenStreetMap France regional extract",
+        "url": "https://download.openstreetmap.fr/extracts/russia/volga_federal_district/tatarstan_republic-latest.osm.pbf",
+        "md5_url": "https://download.openstreetmap.fr/extracts/russia/volga_federal_district/tatarstan_republic.osm.pbf.md5",
+        "md5": "1e8ee33c66247673853a96b49b6580b7",
+        "bytes": 96367609,
+        "last_modified": "Tue, 27 Oct 2026 00:06:13 GMT",
+        "retrieved_at_utc": "2026-10-27T22:32:14.646543+00:00"
+      },
+      "objects": 102532,
+      "group": "buildings",
+      "boundary_filter": "Full geometry intersects saved Kazan boundary",
+      "geometry_quality_for_region": {
+        "geometry_errors": 0,
+        "geometry_error_examples": [],
+        "repaired_geometries": 0
+      },
+      "attribution": "https://www.openstreetmap.org/copyright"
+    },
+    "kazan_raw_landuse.geojson.source.json": {
+      "retrieved_at_utc": "2026-10-27T22:32:57.590838+00:00",
+      "source": "OpenStreetMap / OpenStreetMap France regional PBF",
+      "extract": {
+        "source": "OpenStreetMap France regional extract",
+        "url": "https://download.openstreetmap.fr/extracts/russia/volga_federal_district/tatarstan_republic-latest.osm.pbf",
+        "md5_url": "https://download.openstreetmap.fr/extracts/russia/volga_federal_district/tatarstan_republic.osm.pbf.md5",
+        "md5": "1e8ee33c66247673853a96b49b6580b7",
+        "bytes": 96367609,
+        "last_modified": "Tue, 27 Oct 2026 00:06:13 GMT",
+        "retrieved_at_utc": "2026-10-27T22:32:14.646543+00:00"
+      },
+      "objects": 4396,
+      "group": "landuse",
+      "boundary_filter": "Full geometry intersects saved Kazan boundary",
+      "geometry_quality_for_region": {
+        "geometry_errors": 0,
+        "geometry_error_examples": [],
+        "repaired_geometries": 0
+      },
+      "attribution": "https://www.openstreetmap.org/copyright"
+    },
+    "kazan_raw_railways.geojson.source.json": {
+      "retrieved_at_utc": "2026-10-27T20:46:20.562170+00:00",
+      "source": "OpenStreetMap / Overpass",
+      "endpoint": "https://overpass-api.de/api",
+      "tags": {
+        "railway": "rail"
+      },
+      "objects": 805,
+      "attribution": "https://www.openstreetmap.org/copyright"
+    },
+    "kazan_raw_roads.geojson.source.json": {
+      "retrieved_at_utc": "2026-10-27T20:33:23.707291+00:00",
+      "source": "OpenStreetMap / Overpass",
+      "tags": {
+        "highway": [
+          "construction",
+          "living_street",
+          "motorway",
+          "motorway_link",
+          "pedestrian",
+          "primary",
+          "primary_link",
+          "residential",
+          "road",
+          "secondary",
+          "secondary_link",
+          "tertiary",
+          "tertiary_link",
+          "track",
+          "trunk",
+          "trunk_link",
+          "unclassified"
+        ]
+      },
+      "objects": 10776,
+      "attribution": "https://www.openstreetmap.org/copyright"
+    },
+    "kazan_raw_schools.geojson.source.json": {
+      "retrieved_at_utc": "2026-10-27T22:33:02.785214+00:00",
+      "source": "OpenStreetMap / OpenStreetMap France regional PBF",
+      "extract": {
+        "source": "OpenStreetMap France regional extract",
+        "url": "https://download.openstreetmap.fr/extracts/russia/volga_federal_district/tatarstan_republic-latest.osm.pbf",
+        "md5_url": "https://download.openstreetmap.fr/extracts/russia/volga_federal_district/tatarstan_republic.osm.pbf.md5",
+        "md5": "1e8ee33c66247673853a96b49b6580b7",
+        "bytes": 96367609,
+        "last_modified": "Tue, 27 Oct 2026 00:06:13 GMT",
+        "retrieved_at_utc": "2026-10-27T22:32:14.646543+00:00"
+      },
+      "objects": 239,
+      "group": "schools",
+      "boundary_filter": "Full geometry intersects saved Kazan boundary",
+      "geometry_quality_for_region": {
+        "geometry_errors": 0,
+        "geometry_error_examples": [],
+        "repaired_geometries": 0
+      },
+      "attribution": "https://www.openstreetmap.org/copyright"
+    },
+    "kazan_raw_water.geojson.source.json": {
+      "retrieved_at_utc": "2026-10-27T20:23:45.370522+00:00",
+      "source": "OpenStreetMap / Overpass",
+      "tags": {
+        "natural": [
+          "water",
+          "bay"
+        ],
+        "waterway": [
+          "river",
+          "canal",
+          "ditch"
+        ],
+        "water": true,
+        "landuse": [
+          "basin",
+          "reservoir"
+        ]
+      },
+      "objects": 432,
+      "attribution": "https://www.openstreetmap.org/copyright"
+    }
+  },
+  "city": "Казань, Республика Татарстан, Россия",
+  "blocksnet": "1.0.0a9",
+  "mode": "drive",
+  "school_demand_per_1000": 120,
+  "school_threshold_min": 15,
+  "living_demand_m2_per_person": 30,
+  "unknown_floors_default": 1,
+  "living_area_coefficient": 0.9,
+  "school_capacity_imputed": 237,
+  "building_floors_imputed": 74189,
+  "building_use_unknown": 61926,
+  "graph_source": "https://docs.overturemaps.org/guides/transportation/",
+  "graph_release": "2026-10-21.0",
+  "graph_metadata": {
+    "retrieved_at_utc": "2026-10-27T23:11:37.295762+00:00",
+    "source": "https://docs.overturemaps.org/guides/transportation/",
+    "release": "2026-10-21.0",
+    "mode": "drive",
+    "quality": {
+      "segments_seen": 95162,
+      "car_segments": 73436,
+      "missing_connector_pairs": 927,
+      "geometry_errors": 2,
+      "default_speed_edges": 280347,
+      "conditional_access_rules": 3568,
+      "turn_restrictions_not_modelled": 3255,
+      "nodes_before_component_selection": 121994,
+      "nodes_used": 121186,
+      "nodes_excluded": 808,
+      "edges_used": 292565
+    },
+    "input_metadata": {
+      "kazan_segment_2026-10-21.0.parquet": {
+        "retrieved_at_utc": "2026-10-27T23:07:25.266623+00:00",
+        "source": "https://docs.overturemaps.org/guides/transportation/",
+        "release": "2026-10-21.0",
+        "bbox": [
+          48.483661440322486,
+          55.413033037951834,
+          49.71035155070703,
+          56.1163828413013
+        ],
+        "buffer_m": 20000,
+        "feature_type": "segment",
+        "objects": 95162,
+        "attribution": "Overture Maps Foundation; OpenStreetMap contributors; upstream sources in the source tables"
+      },
+      "kazan_connector_2026-10-21.0.parquet": {
+        "retrieved_at_utc": "2026-10-27T23:07:29.907403+00:00",
+        "source": "https://docs.overturemaps.org/guides/transportation/",
+        "release": "2026-10-21.0",
+        "bbox": [
+          48.483661440322486,
+          55.413033037951834,
+          49.71035155070703,
+          56.1163828413013
+        ],
+        "buffer_m": 20000,
+        "feature_type": "connector",
+        "objects": 148324,
+        "attribution": "Overture Maps Foundation; OpenStreetMap contributors; upstream sources in the source tables"
+      }
+    },
+    "topology": "Only published connector IDs; no junctions inferred from geometric crossings",
+    "speed_model": {
+      "motorway": 90,
+      "trunk": 70,
+      "primary": 50,
+      "secondary": 40,
+      "tertiary": 35,
+      "residential": 30,
+      "living_street": 15,
+      "service": 20,
+      "unclassified": 30,
+      "track": 15
+    },
+    "limitations": [
+      "No congestion",
+      "Posted limits or class-based speeds",
+      "Conditional access and turn restrictions are not fully modelled",
+      "Linear references interpreted on projected geometry",
+      "Largest strongly connected car component; first/last connectors are straight-line estimates"
+    ]
+  },
+  "long_connectors_over_1km": 11,
+  "limitations": [
+    "OSM completeness",
+    "model population and school capacity",
+    "drive scenario without congestion",
+    "straight first/last mile connectors",
+    "Overture car network; conditional access and turn restrictions not fully modelled"
+  ]
+}

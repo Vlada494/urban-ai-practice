@@ -11,10 +11,13 @@ authors = [
 description = "IDU research package boilerplate"
 readme = "README.rst"
 requires-python = ">=3.10"
-license = { file = "LICENCE" }
+license = { file = "LICENSE" }
 
 dependencies = [ # здесь необходимо вести все устанавливаемые зависимости: пакеты, которые необходимы для адекватной работы вашей библиотеки
     "geopandas>=1.0.0,<2.0.0",
+    "blocksnet[ipynb,torch]==1.0.0a9",
+    "osmium==4.3.2", # Чтение готовой региональной выгрузки OSM без Overpass
+    "overturemaps==1.0.2", # Загрузка готовой дорожной топологии с полным охватом территории
 ]
 
 classifiers = [ # метаданные для описания проекта пользователям, например, на PyPI: какая лицензия, какое предназначение
@@ -27,9 +30,13 @@ classifiers = [ # метаданные для описания проекта п
 [tool.setuptools.packages.find] # что включать в сборку при установке
 include = ["my_package*"]
 
+[tool.setuptools.package-data]
+my_package = ["dashboard_assets/*"]
+
 [tool.setuptools_scm]
 version_scheme = "post-release"
 local_scheme = "no-local-version"
+fallback_version = "0.0.0" # Установка из архива без каталога .git
 
 [project.optional-dependencies]
 dev = [ # зависимости, необходимые для разработки библиотеки, но не для её использования

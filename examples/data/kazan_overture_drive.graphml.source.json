@@ -1,0 +1,71 @@
+{
+  "retrieved_at_utc": "2026-10-27T23:11:37.295762+00:00",
+  "source": "https://docs.overturemaps.org/guides/transportation/",
+  "release": "2026-10-21.0",
+  "mode": "drive",
+  "quality": {
+    "segments_seen": 95162,
+    "car_segments": 73436,
+    "missing_connector_pairs": 927,
+    "geometry_errors": 2,
+    "default_speed_edges": 280347,
+    "conditional_access_rules": 3568,
+    "turn_restrictions_not_modelled": 3255,
+    "nodes_before_component_selection": 121994,
+    "nodes_used": 121186,
+    "nodes_excluded": 808,
+    "edges_used": 292565
+  },
+  "input_metadata": {
+    "kazan_segment_2026-10-21.0.parquet": {
+      "retrieved_at_utc": "2026-10-27T23:07:25.266623+00:00",
+      "source": "https://docs.overturemaps.org/guides/transportation/",
+      "release": "2026-10-21.0",
+      "bbox": [
+        48.483661440322486,
+        55.413033037951834,
+        49.71035155070703,
+        56.1163828413013
+      ],
+      "buffer_m": 20000,
+      "feature_type": "segment",
+      "objects": 95162,
+      "attribution": "Overture Maps Foundation; OpenStreetMap contributors; upstream sources in the source tables"
+    },
+    "kazan_connector_2026-10-21.0.parquet": {
+      "retrieved_at_utc": "2026-10-27T23:07:29.907403+00:00",
+      "source": "https://docs.overturemaps.org/guides/transportation/",
+      "release": "2026-10-21.0",
+      "bbox": [
+        48.483661440322486,
+        55.413033037951834,
+        49.71035155070703,
+        56.1163828413013
+      ],
+      "buffer_m": 20000,
+      "feature_type": "connector",
+      "objects": 148324,
+      "attribution": "Overture Maps Foundation; OpenStreetMap contributors; upstream sources in the source tables"
+    }
+  },
+  "topology": "Only published connector IDs; no junctions inferred from geometric crossings",
+  "speed_model": {
+    "motorway": 90,
+    "trunk": 70,
+    "primary": 50,
+    "secondary": 40,
+    "tertiary": 35,
+    "residential": 30,
+    "living_street": 15,
+    "service": 20,
+    "unclassified": 30,
+    "track": 15
+  },
+  "limitations": [
+    "No congestion",
+    "Posted limits or class-based speeds",
+    "Conditional access and turn restrictions are not fully modelled",
+    "Linear references interpreted on projected geometry",
+    "Largest strongly connected car component; first/last connectors are straight-line estimates"
+  ]
+}

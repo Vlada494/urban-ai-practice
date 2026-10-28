@@ -1,0 +1,20 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+  "python.useEnvironmentsExtension": false,
+  "python.terminal.activateEnvironment": false,
+  "terminal.integrated.shellIntegration.enabled": false,
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.profiles.windows": {
+    "PowerShell": {
+      "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "args": ["-NoLogo", "-NoProfile"]
+    }
+  },
+  "terminal.integrated.env.windows": {
+    "SHELL": "powershell.exe",
+    "PYTHONUTF8": "1",
+    "VIRTUAL_ENV": "${workspaceFolder}/.venv",
+    "PSModulePath": "${env:ProgramFiles}\\WindowsPowerShell\\Modules;${env:WINDIR}\\System32\\WindowsPowerShell\\v1.0\\Modules;${env:USERPROFILE}\\Documents\\WindowsPowerShell\\Modules",
+    "PATH": "${workspaceFolder}/.venv/Scripts;${env:PATH}"
+  }
+}

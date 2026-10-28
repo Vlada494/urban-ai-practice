@@ -1,0 +1,10 @@
+{
+  "type": "FeatureCollection",
+  "features": [],
+  "field_names": [
+    "capacity",
+    "capacity_estimated_count",
+    "name",
+    "count"
+  ]
+}

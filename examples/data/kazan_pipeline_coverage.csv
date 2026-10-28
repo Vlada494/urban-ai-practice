@@ -1,0 +1,9 @@
+Группа,Файл,Файл существует
+"Землепользование: 7 долей, главная функция и её доля",kazan_blocks_landuse.geojson,True
+Время в пути: матрица мин и сводные времена,kazan_acc_mx.parquet,True
+"Здания: количество, площади, этажность, население, оценки",kazan_buildings_blocks.geojson,True
+"Школы: количество, вместимость, признак оценки",kazan_schools_blocks.geojson,True
+"Обеспеченность: оба показателя, потребность, места, распределение",kazan_school_provision.geojson,True
+Плотность: все 7 индексов,kazan_density_metrics.geojson,True
+Морфотипы: оба метода и характеристики кластеров,kazan_blocks_morphotypes.geojson,True
+"Доступность с весами по площади, мин",kazan_blocks_accessibility.geojson,True
