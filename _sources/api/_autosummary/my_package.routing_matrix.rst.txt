@@ -1,0 +1,30 @@
+my\_package.routing\_matrix
+===========================
+
+.. automodule:: my_package.routing_matrix
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      calculate_drive_matrix
+      prepare_matrix_graph
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

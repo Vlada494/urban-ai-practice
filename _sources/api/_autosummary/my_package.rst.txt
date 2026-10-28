@@ -1,0 +1,36 @@
+﻿my\_package
+===========
+
+.. automodule:: my_package
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   my_package.dashboard_builder
+   my_package.kazan_support
+   my_package.my_module
+   my_package.overture_network
+   my_package.regional_osm
+   my_package.routing_matrix
+

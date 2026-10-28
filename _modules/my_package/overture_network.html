@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>my_package.overture_network &mdash; MyPackage 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            MyPackage
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/index.html">Гайд по использованию шаблона</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">MyPackage</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">my_package.overture_network</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for my_package.overture_network</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Convert downloaded Overture topology to NetworkX; never infer road junctions.</span>
+
+<span class="sd">Only calls from notebook cells download/prepare research data. Import is offline.</span>
+<span class="sd">"""</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hashlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">sha256</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">geopandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">osmnx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ox</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">shapely.ops</span><span class="w"> </span><span class="kn">import</span> <span class="n">substring</span>
+
+<span class="n">RELEASE</span> <span class="o">=</span> <span class="s1">'2026-10-21.0'</span>
+<span class="n">SOURCE</span> <span class="o">=</span> <span class="s1">'https://docs.overturemaps.org/guides/transportation/'</span>
+<span class="n">SPEEDS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'motorway'</span><span class="p">:</span><span class="mi">90</span><span class="p">,</span><span class="s1">'trunk'</span><span class="p">:</span><span class="mi">70</span><span class="p">,</span><span class="s1">'primary'</span><span class="p">:</span><span class="mi">50</span><span class="p">,</span><span class="s1">'secondary'</span><span class="p">:</span><span class="mi">40</span><span class="p">,</span><span class="s1">'tertiary'</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span>
+          <span class="s1">'residential'</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span><span class="s1">'living_street'</span><span class="p">:</span><span class="mi">15</span><span class="p">,</span><span class="s1">'service'</span><span class="p">:</span><span class="mi">20</span><span class="p">,</span><span class="s1">'unclassified'</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span><span class="s1">'track'</span><span class="p">:</span><span class="mi">15</span><span class="p">}</span>
+<span class="n">CAR_MODES</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'vehicle'</span><span class="p">,</span><span class="s1">'motor_vehicle'</span><span class="p">,</span><span class="s1">'car'</span><span class="p">,</span><span class="s1">'motor_car'</span><span class="p">,</span><span class="s1">'automobile'</span><span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_sequence</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,(</span><span class="nb">list</span><span class="p">,</span><span class="nb">tuple</span><span class="p">))</span> <span class="k">else</span> <span class="p">[]</span>
+
+
+<div class="viewcode-block" id="query_bbox"><a class="viewcode-back" href="../../api/_autosummary/my_package.overture_network.html#my_package.overture_network.query_bbox">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">query_bbox</span><span class="p">(</span><span class="n">boundary</span><span class="p">,</span> <span class="n">buffer_m</span><span class="o">=</span><span class="mi">20000</span><span class="p">):</span>
+    <span class="n">crs</span> <span class="o">=</span> <span class="n">boundary</span><span class="o">.</span><span class="n">estimate_utm_crs</span><span class="p">()</span>
+    <span class="n">region</span> <span class="o">=</span> <span class="n">boundary</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="n">crs</span><span class="p">)</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">union_all</span><span class="p">()</span><span class="o">.</span><span class="n">buffer</span><span class="p">(</span><span class="n">buffer_m</span><span class="p">)</span><span class="o">.</span><span class="n">envelope</span>
+    <span class="k">return</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoSeries</span><span class="p">([</span><span class="n">region</span><span class="p">],</span><span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">)</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="mi">4326</span><span class="p">)</span><span class="o">.</span><span class="n">total_bounds</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="download_overture_network"><a class="viewcode-back" href="../../api/_autosummary/my_package.overture_network.html#my_package.overture_network.download_overture_network">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">download_overture_network</span><span class="p">(</span><span class="n">boundary</span><span class="p">,</span> <span class="n">data_dir</span><span class="p">,</span> <span class="n">release</span><span class="o">=</span><span class="n">RELEASE</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Stream only the bbox subset of published connector/segment tables."""</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">overturemaps.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">record_batch_reader</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">overturemaps.writers</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_writer</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.kazan_support</span><span class="w"> </span><span class="kn">import</span> <span class="n">source_note</span>
+
+    <span class="n">folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_dir</span><span class="p">)</span><span class="o">/</span><span class="s1">'overture'</span>
+    <span class="n">folder</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">bbox</span> <span class="o">=</span> <span class="n">query_bbox</span><span class="p">(</span><span class="n">boundary</span><span class="p">)</span>
+    <span class="n">paths</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">feature_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'segment'</span><span class="p">,</span><span class="s1">'connector'</span><span class="p">]:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">folder</span><span class="o">/</span><span class="sa">f</span><span class="s1">'kazan_</span><span class="si">{</span><span class="n">feature_type</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">release</span><span class="si">}</span><span class="s1">.parquet'</span>
+        <span class="n">marker</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">+</span><span class="s1">'.source.json'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="n">marker</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">note</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">marker</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">note</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'release'</span><span class="p">)</span><span class="o">!=</span><span class="n">release</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">note</span><span class="p">[</span><span class="s1">'bbox'</span><span class="p">],</span><span class="n">bbox</span><span class="p">,</span><span class="n">atol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span><span class="n">rtol</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Кэш Overture относится к другой территории. Покажи эту ошибку в чате.'</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">'Читаем сохранённый слой:'</span><span class="p">,</span><span class="n">feature_type</span><span class="p">,</span><span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">paths</span><span class="p">[</span><span class="n">feature_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>
+            <span class="k">continue</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Overture </span><span class="si">{</span><span class="n">release</span><span class="si">}</span><span class="s1">: загружаем </span><span class="si">{</span><span class="n">feature_type</span><span class="si">}</span><span class="s1"> для Казани и 20-км запаса.'</span><span class="p">,</span><span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'Сначала читается индекс файлов; затем появится число полученных объектов.'</span><span class="p">,</span><span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">reader</span> <span class="o">=</span> <span class="n">record_batch_reader</span><span class="p">(</span><span class="n">feature_type</span><span class="p">,</span><span class="n">bbox</span><span class="o">=</span><span class="n">bbox</span><span class="p">,</span><span class="n">release</span><span class="o">=</span><span class="n">release</span><span class="p">,</span>
+                                     <span class="n">connect_timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">request_timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span><span class="n">stac</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">reader</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Overture не вернул данные для выбранной территории/версии. Покажи сообщение сервера в чате.'</span><span class="p">)</span>
+        <span class="n">staged</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">'.parquet.part'</span><span class="p">)</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">get_writer</span><span class="p">(</span><span class="s1">'geoparquet'</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">staged</span><span class="p">),</span><span class="n">reader</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span> <span class="k">as</span> <span class="n">writer</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
+                    <span class="n">writer</span><span class="o">.</span><span class="n">write_batch</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+                    <span class="n">count</span> <span class="o">+=</span> <span class="n">batch</span><span class="o">.</span><span class="n">num_rows</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'  </span><span class="si">{</span><span class="n">feature_type</span><span class="si">}</span><span class="s1">: получено </span><span class="si">{</span><span class="n">count</span><span class="si">:</span><span class="s1">,</span><span class="si">}</span><span class="s1"> объектов'</span><span class="p">,</span><span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Загрузка Overture </span><span class="si">{</span><span class="n">feature_type</span><span class="si">}</span><span class="s1"> прервалась. Повтори эту ячейку: завершённые слои сохраняются.'</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
+        <span class="k">if</span> <span class="n">count</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Пустой слой Overture </span><span class="si">{</span><span class="n">feature_type</span><span class="si">}</span><span class="s1">. Расчёт остановлен.'</span><span class="p">)</span>
+        <span class="n">staged</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">source_note</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="n">source</span><span class="o">=</span><span class="n">SOURCE</span><span class="p">,</span><span class="n">release</span><span class="o">=</span><span class="n">release</span><span class="p">,</span><span class="n">bbox</span><span class="o">=</span><span class="n">bbox</span><span class="p">,</span><span class="n">buffer_m</span><span class="o">=</span><span class="mi">20000</span><span class="p">,</span>
+                    <span class="n">feature_type</span><span class="o">=</span><span class="n">feature_type</span><span class="p">,</span><span class="n">objects</span><span class="o">=</span><span class="n">count</span><span class="p">,</span>
+                    <span class="n">attribution</span><span class="o">=</span><span class="s1">'Overture Maps Foundation; OpenStreetMap contributors; upstream sources in the source tables'</span><span class="p">)</span>
+        <span class="n">paths</span><span class="p">[</span><span class="n">feature_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>
+    <span class="k">return</span> <span class="n">paths</span><span class="p">[</span><span class="s1">'segment'</span><span class="p">],</span><span class="n">paths</span><span class="p">[</span><span class="s1">'connector'</span><span class="p">]</span></div>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_matches</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">heading</span><span class="p">):</span>
+    <span class="n">between</span> <span class="o">=</span> <span class="n">_sequence</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'between'</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">between</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">between</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">&lt;=</span><span class="n">position</span><span class="o">&lt;=</span><span class="nb">float</span><span class="p">(</span><span class="n">between</span><span class="p">[</span><span class="mi">1</span><span class="p">])):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">raw_when</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'when'</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_when</span><span class="p">,</span><span class="nb">dict</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">when</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="n">raw_when</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
+    <span class="c1"># No departure time, permit or special purpose is assumed for this model.</span>
+    <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">when</span><span class="p">)</span><span class="o">-</span><span class="p">{</span><span class="s1">'heading'</span><span class="p">,</span><span class="s1">'mode'</span><span class="p">}:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">when</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'heading'</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="n">heading</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">modes</span> <span class="o">=</span> <span class="n">_sequence</span><span class="p">(</span><span class="n">when</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'mode'</span><span class="p">))</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="n">modes</span> <span class="ow">or</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">modes</span><span class="p">)</span><span class="o">&amp;</span><span class="n">CAR_MODES</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_travel_time</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="n">left</span><span class="p">,</span><span class="n">right</span><span class="p">,</span><span class="n">length_m</span><span class="p">,</span><span class="n">heading</span><span class="p">):</span>
+    <span class="n">access</span> <span class="o">=</span> <span class="n">_sequence</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'access_restrictions'</span><span class="p">))</span>
+    <span class="n">limits</span> <span class="o">=</span> <span class="n">_sequence</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'speed_limits'</span><span class="p">))</span>
+    <span class="n">positions</span> <span class="o">=</span> <span class="p">{</span><span class="n">left</span><span class="p">,</span><span class="n">right</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">access</span><span class="o">+</span><span class="n">limits</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">_sequence</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'between'</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">left</span><span class="o">&lt;</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">&lt;</span><span class="n">right</span><span class="p">:</span>
+                <span class="n">positions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+    <span class="n">positions</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span>
+    <span class="n">minutes</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">used_default</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">start</span><span class="p">,</span><span class="n">end</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span><span class="n">positions</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+        <span class="n">midpoint</span> <span class="o">=</span> <span class="p">(</span><span class="n">start</span><span class="o">+</span><span class="n">end</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+        <span class="n">allowed</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">access</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">_matches</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span><span class="n">midpoint</span><span class="p">,</span><span class="n">heading</span><span class="p">):</span>
+                <span class="n">allowed</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'access_type'</span><span class="p">)</span><span class="o">==</span><span class="s1">'allowed'</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">allowed</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span><span class="kc">False</span>
+        <span class="n">speed</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">limits</span><span class="p">:</span>
+            <span class="n">maximum</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'max_speed'</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">maximum</span><span class="p">,</span><span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">_matches</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span><span class="n">midpoint</span><span class="p">,</span><span class="n">heading</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">maximum</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'value'</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">candidate</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.609344</span> <span class="k">if</span> <span class="n">maximum</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'unit'</span><span class="p">)</span><span class="o">==</span><span class="s1">'mph'</span> <span class="k">else</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="mi">0</span><span class="o">&lt;</span><span class="n">candidate</span><span class="o">&lt;=</span><span class="mi">200</span><span class="p">:</span>
+                        <span class="n">speed</span> <span class="o">=</span> <span class="n">candidate</span> <span class="k">if</span> <span class="n">speed</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">min</span><span class="p">(</span><span class="n">speed</span><span class="p">,</span><span class="n">candidate</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">speed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">speed</span> <span class="o">=</span> <span class="n">SPEEDS</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s1">'class'</span><span class="p">]]</span>
+            <span class="n">used_default</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">part_length</span> <span class="o">=</span> <span class="n">length_m</span><span class="o">*</span><span class="p">(</span><span class="n">end</span><span class="o">-</span><span class="n">start</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">right</span><span class="o">-</span><span class="n">left</span><span class="p">)</span>
+        <span class="n">minutes</span> <span class="o">+=</span> <span class="n">part_length</span><span class="o">*</span><span class="mi">60</span><span class="o">/</span><span class="p">(</span><span class="n">speed</span><span class="o">*</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">minutes</span><span class="p">,</span><span class="n">used_default</span>
+
+
+<div class="viewcode-block" id="network_to_graph"><a class="viewcode-back" href="../../api/_autosummary/my_package.overture_network.html#my_package.overture_network.network_to_graph">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">network_to_graph</span><span class="p">(</span><span class="n">segments</span><span class="p">,</span><span class="n">connectors</span><span class="p">,</span><span class="n">crs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Keep published connector IDs; geometric crossings never create links."""</span>
+    <span class="n">segments</span> <span class="o">=</span> <span class="n">segments</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="n">crs</span><span class="p">)</span>
+    <span class="n">connectors</span> <span class="o">=</span> <span class="n">connectors</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="n">crs</span><span class="p">)</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="s1">'id'</span><span class="p">)</span>
+    <span class="n">coordinates</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">id</span><span class="p">):(</span><span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">x</span><span class="p">),</span><span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">y</span><span class="p">))</span>
+                   <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">connectors</span><span class="o">.</span><span class="n">itertuples</span><span class="p">()</span> <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">geom_type</span><span class="o">==</span><span class="s1">'Point'</span><span class="p">}</span>
+    <span class="n">identifiers</span> <span class="o">=</span> <span class="p">{</span><span class="n">value</span><span class="p">:</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">coordinates</span><span class="p">))}</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">MultiDiGraph</span><span class="p">(</span><span class="n">crs</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">crs</span><span class="o">.</span><span class="n">to_epsg</span><span class="p">()),</span><span class="n">simplified</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">quality</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'segments_seen'</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span><span class="s1">'car_segments'</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span><span class="s1">'missing_connector_pairs'</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span>
+               <span class="s1">'geometry_errors'</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span><span class="s1">'default_speed_edges'</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span><span class="s1">'conditional_access_rules'</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span>
+               <span class="s1">'turn_restrictions_not_modelled'</span><span class="p">:</span><span class="mi">0</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">segments</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s1">'records'</span><span class="p">):</span>
+        <span class="n">quality</span><span class="p">[</span><span class="s1">'segments_seen'</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'subtype'</span><span class="p">)</span><span class="o">!=</span><span class="s1">'road'</span> <span class="ow">or</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'class'</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SPEEDS</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">flags</span> <span class="o">=</span> <span class="p">[</span><span class="n">flag</span> <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">_sequence</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'road_flags'</span><span class="p">))</span> <span class="k">for</span> <span class="n">flag</span> <span class="ow">in</span> <span class="n">_sequence</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'values'</span><span class="p">))]</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">value</span> <span class="ow">in</span> <span class="n">flags</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'is_under_construction'</span><span class="p">,</span><span class="s1">'is_abandoned'</span><span class="p">]):</span>
+            <span class="k">continue</span>
+        <span class="n">quality</span><span class="p">[</span><span class="s1">'car_segments'</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">quality</span><span class="p">[</span><span class="s1">'conditional_access_rules'</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span>
+            <span class="nb">bool</span><span class="p">({</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'when'</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span><span class="o">-</span><span class="p">{</span><span class="s1">'heading'</span><span class="p">,</span><span class="s1">'mode'</span><span class="p">})</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">_sequence</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'access_restrictions'</span><span class="p">)))</span>
+        <span class="n">quality</span><span class="p">[</span><span class="s1">'turn_restrictions_not_modelled'</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">_sequence</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'prohibited_transitions'</span><span class="p">)))</span>
+        <span class="n">refs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">_sequence</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'connectors'</span><span class="p">)),</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ref</span><span class="p">:</span><span class="nb">float</span><span class="p">(</span><span class="n">ref</span><span class="p">[</span><span class="s1">'at'</span><span class="p">]))</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">'geometry'</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">geom_type</span><span class="o">!=</span><span class="s1">'LineString'</span> <span class="ow">or</span> <span class="n">line</span><span class="o">.</span><span class="n">is_empty</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">is_valid</span><span class="p">:</span>
+            <span class="n">quality</span><span class="p">[</span><span class="s1">'geometry_errors'</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">continue</span>
+        <span class="k">for</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">refs</span><span class="p">,</span><span class="n">refs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+            <span class="n">start</span><span class="p">,</span><span class="n">end</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s1">'at'</span><span class="p">]),</span><span class="nb">float</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="s1">'at'</span><span class="p">])</span>
+            <span class="n">first</span><span class="p">,</span><span class="n">last</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s1">'connector_id'</span><span class="p">]),</span><span class="nb">str</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="s1">'connector_id'</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">first</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">coordinates</span> <span class="ow">or</span> <span class="n">last</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">coordinates</span><span class="p">:</span>
+                <span class="n">quality</span><span class="p">[</span><span class="s1">'missing_connector_pairs'</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span><span class="o">&lt;=</span><span class="n">start</span><span class="o">&lt;</span><span class="n">end</span><span class="o">&lt;=</span><span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="n">first</span><span class="o">==</span><span class="n">last</span><span class="p">:</span>
+                <span class="n">quality</span><span class="p">[</span><span class="s1">'geometry_errors'</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">continue</span>
+            <span class="c1"># Source linear references identify a section; physical junctions</span>
+            <span class="c1"># are the supplied connectors, not intersections inferred in space.</span>
+            <span class="n">piece</span> <span class="o">=</span> <span class="n">substring</span><span class="p">(</span><span class="n">line</span><span class="p">,</span><span class="n">start</span><span class="p">,</span><span class="n">end</span><span class="p">,</span><span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">length</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">piece</span><span class="o">.</span><span class="n">length</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">length</span><span class="o">&lt;=</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">piece</span><span class="o">.</span><span class="n">geom_type</span><span class="o">!=</span><span class="s1">'LineString'</span><span class="p">:</span>
+                <span class="n">quality</span><span class="p">[</span><span class="s1">'geometry_errors'</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">continue</span>
+            <span class="k">for</span> <span class="n">heading</span><span class="p">,</span><span class="n">left_id</span><span class="p">,</span><span class="n">right_id</span><span class="p">,</span><span class="n">geometry</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="p">(</span><span class="s1">'forward'</span><span class="p">,</span><span class="n">first</span><span class="p">,</span><span class="n">last</span><span class="p">,</span><span class="n">piece</span><span class="p">),(</span><span class="s1">'backward'</span><span class="p">,</span><span class="n">last</span><span class="p">,</span><span class="n">first</span><span class="p">,</span><span class="n">piece</span><span class="o">.</span><span class="n">reverse</span><span class="p">())]:</span>
+                <span class="n">minutes</span><span class="p">,</span><span class="n">estimated</span> <span class="o">=</span> <span class="n">_travel_time</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="n">start</span><span class="p">,</span><span class="n">end</span><span class="p">,</span><span class="n">length</span><span class="p">,</span><span class="n">heading</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">minutes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">minutes</span><span class="p">)</span> <span class="ow">or</span> <span class="n">minutes</span><span class="o">&lt;=</span><span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Некорректное время ребра Overture.'</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">identifier</span> <span class="ow">in</span> <span class="p">[</span><span class="n">left_id</span><span class="p">,</span><span class="n">right_id</span><span class="p">]:</span>
+                    <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">coordinates</span><span class="p">[</span><span class="n">identifier</span><span class="p">]</span>
+                    <span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">identifiers</span><span class="p">[</span><span class="n">identifier</span><span class="p">],</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span><span class="n">overture_id</span><span class="o">=</span><span class="n">identifier</span><span class="p">)</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">identifiers</span><span class="p">[</span><span class="n">left_id</span><span class="p">],</span><span class="n">identifiers</span><span class="p">[</span><span class="n">right_id</span><span class="p">],</span><span class="n">length</span><span class="o">=</span><span class="n">length</span><span class="p">,</span><span class="n">time_min</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">minutes</span><span class="p">),</span>
+                    <span class="n">travel_time</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">minutes</span><span class="p">)</span><span class="o">*</span><span class="mi">60</span><span class="p">,</span><span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">,</span><span class="n">highway</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s1">'class'</span><span class="p">],</span>
+                    <span class="n">overture_segment_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]),</span><span class="n">speed_estimated</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="n">estimated</span><span class="p">))</span>
+                <span class="n">quality</span><span class="p">[</span><span class="s1">'default_speed_edges'</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">estimated</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">graph</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'В выгрузке не получился пригодный автомобильный граф.'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">graph</span><span class="p">,</span><span class="n">quality</span></div>
+
+
+<div class="viewcode-block" id="prepare_overture_graph"><a class="viewcode-back" href="../../api/_autosummary/my_package.overture_network.html#my_package.overture_network.prepare_overture_graph">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">prepare_overture_graph</span><span class="p">(</span><span class="n">segment_path</span><span class="p">,</span><span class="n">connector_path</span><span class="p">,</span><span class="n">crs</span><span class="p">,</span><span class="n">data_dir</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.kazan_support</span><span class="w"> </span><span class="kn">import</span> <span class="n">reusable</span><span class="p">,</span><span class="n">stamp</span><span class="p">,</span><span class="n">source_note</span>
+    <span class="n">segment_path</span><span class="p">,</span><span class="n">connector_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">segment_path</span><span class="p">),</span><span class="n">Path</span><span class="p">(</span><span class="n">connector_path</span><span class="p">)</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_dir</span><span class="p">)</span><span class="o">/</span><span class="s1">'kazan_overture_drive.graphml'</span>
+    <span class="n">dependencies</span> <span class="o">=</span> <span class="p">[</span><span class="n">segment_path</span><span class="p">,</span><span class="n">connector_path</span><span class="p">,</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)]</span>
+    <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'release'</span><span class="p">:</span><span class="n">RELEASE</span><span class="p">,</span><span class="s1">'mode'</span><span class="p">:</span><span class="s1">'drive'</span><span class="p">,</span><span class="s1">'crs'</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">crs</span><span class="o">.</span><span class="n">to_epsg</span><span class="p">()),</span><span class="s1">'converter'</span><span class="p">:</span><span class="mi">1</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">reusable</span><span class="p">([</span><span class="n">path</span><span class="p">],</span><span class="n">dependencies</span><span class="p">,</span><span class="n">parameters</span><span class="p">):</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">ox</span><span class="o">.</span><span class="n">load_graphml</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="n">edge_dtypes</span><span class="o">=</span><span class="p">{</span><span class="s1">'time_min'</span><span class="p">:</span><span class="nb">float</span><span class="p">})</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s1">'crs'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">crs</span><span class="o">.</span><span class="n">to_epsg</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'Прочитан сохранённый автомобильный граф Overture.'</span><span class="p">,</span><span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">graph</span><span class="p">,</span><span class="n">path</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'Переводим готовые связи Overture в формат BlocksNet.'</span><span class="p">,</span><span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">graph</span><span class="p">,</span><span class="n">quality</span> <span class="o">=</span> <span class="n">network_to_graph</span><span class="p">(</span><span class="n">gpd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="n">segment_path</span><span class="p">),</span><span class="n">gpd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="n">connector_path</span><span class="p">),</span><span class="n">crs</span><span class="p">)</span>
+    <span class="n">original_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+    <span class="n">component</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">strongly_connected_components</span><span class="p">(</span><span class="n">graph</span><span class="p">),</span><span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">component</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Нет связной автомобильной сети. Требуется проверка данных и ограничений.'</span><span class="p">)</span>
+    <span class="n">quality</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">'nodes_before_component_selection'</span><span class="p">:</span><span class="n">original_nodes</span><span class="p">,</span><span class="s1">'nodes_used'</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="p">),</span>
+                    <span class="s1">'nodes_excluded'</span><span class="p">:</span><span class="n">original_nodes</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="p">),</span><span class="s1">'edges_used'</span><span class="p">:</span><span class="n">graph</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()})</span>
+    <span class="n">staged</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="s1">'.writing'</span><span class="p">)</span>
+    <span class="n">ox</span><span class="o">.</span><span class="n">save_graphml</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span><span class="n">staged</span><span class="p">)</span>
+    <span class="n">staged</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">stamp</span><span class="p">([</span><span class="n">path</span><span class="p">],</span><span class="n">dependencies</span><span class="p">,</span><span class="n">parameters</span><span class="p">)</span>
+    <span class="n">input_metadata</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">:</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">+</span><span class="s1">'.source.json'</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">))</span>
+                      <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">[</span><span class="n">segment_path</span><span class="p">,</span><span class="n">connector_path</span><span class="p">]</span> <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">+</span><span class="s1">'.source.json'</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()}</span>
+    <span class="n">source_note</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="n">source</span><span class="o">=</span><span class="n">SOURCE</span><span class="p">,</span><span class="n">release</span><span class="o">=</span><span class="n">RELEASE</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s1">'drive'</span><span class="p">,</span><span class="n">quality</span><span class="o">=</span><span class="n">quality</span><span class="p">,</span><span class="n">input_metadata</span><span class="o">=</span><span class="n">input_metadata</span><span class="p">,</span>
+        <span class="n">topology</span><span class="o">=</span><span class="s1">'Only published connector IDs; no junctions inferred from geometric crossings'</span><span class="p">,</span>
+        <span class="n">speed_model</span><span class="o">=</span><span class="n">SPEEDS</span><span class="p">,</span>
+        <span class="n">limitations</span><span class="o">=</span><span class="p">[</span><span class="s1">'No congestion'</span><span class="p">,</span><span class="s1">'Posted limits or class-based speeds'</span><span class="p">,</span>
+                     <span class="s1">'Conditional access and turn restrictions are not fully modelled'</span><span class="p">,</span>
+                     <span class="s1">'Linear references interpreted on projected geometry'</span><span class="p">,</span>
+                     <span class="s1">'Largest strongly connected car component; first/last connectors are straight-line estimates'</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Граф Overture: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span><span class="si">:</span><span class="s1">,</span><span class="si">}</span><span class="s1"> узлов, </span><span class="si">{</span><span class="n">graph</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span><span class="si">:</span><span class="s1">,</span><span class="si">}</span><span class="s1"> рёбер. Исключено узлов отдельных компонент: </span><span class="si">{</span><span class="n">quality</span><span class="p">[</span><span class="s2">"nodes_excluded"</span><span class="p">]</span><span class="si">:</span><span class="s1">,</span><span class="si">}</span><span class="s1">.'</span><span class="p">,</span><span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">graph</span><span class="p">,</span><span class="n">path</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024-2026.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

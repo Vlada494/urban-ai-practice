@@ -1,0 +1,57 @@
+my\_package.kazan\_support
+==========================
+
+.. automodule:: my_package.kazan_support
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      clean_value
+      deduplicate_schools
+      download_ready_graph
+      fetch_boundary
+      fetch_features
+      graph_coverage
+      inspect_map
+      land_use_label
+      landuse_table_ru
+      layer_payload
+      now
+      numeric
+      plot_columns
+      prepare_drive_graph
+      preview_saved_map
+      provision_links_geojson
+      read_layer
+      reusable
+      save_layer
+      signature
+      source_note
+      stamp
+      write_json
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Exceptions
+
+   .. autosummary::
+   
+      OverpassUnavailable
+   
+   
+
+
+

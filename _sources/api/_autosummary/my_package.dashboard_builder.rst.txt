@@ -1,0 +1,34 @@
+my\_package.dashboard\_builder
+==============================
+
+.. automodule:: my_package.dashboard_builder
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      compact_geo
+      main
+      morph_label
+      read_layer
+      spec
+      svg_plot
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

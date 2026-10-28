@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>my_package.kazan_support &mdash; MyPackage 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="my_package.my_module" href="my_package.my_module.html" />
+    <link rel="prev" title="my_package.dashboard_builder" href="my_package.dashboard_builder.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            MyPackage
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../guide/index.html">Гайд по использованию шаблона</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">API documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="my_package.html">my_package</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="my_package.dashboard_builder.html">my_package.dashboard_builder</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">my_package.kazan_support</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#my_package.kazan_support.land_use_label"><code class="docutils literal notranslate"><span class="pre">land_use_label()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#my_package.kazan_support.landuse_table_ru"><code class="docutils literal notranslate"><span class="pre">landuse_table_ru()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#my_package.kazan_support.preview_saved_map"><code class="docutils literal notranslate"><span class="pre">preview_saved_map()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#my_package.kazan_support.OverpassUnavailable"><code class="docutils literal notranslate"><span class="pre">OverpassUnavailable</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#my_package.kazan_support.now"><code class="docutils literal notranslate"><span class="pre">now()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#my_package.kazan_support.write_json"><code class="docutils literal notranslate"><span class="pre">write_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#my_package.kazan_support.clean_value"><code class="docutils literal notranslate"><span class="pre">clean_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#my_package.kazan_support.layer_payload"><code class="docutils literal notranslate"><span class="pre">layer_payload()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#my_package.kazan_support.save_layer"><code class="docutils literal notranslate"><span class="pre">save_layer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#my_package.kazan_support.read_layer"><code class="docutils literal notranslate"><span class="pre">read_layer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#my_package.kazan_support.source_note"><code class="docutils literal notranslate"><span class="pre">source_note()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#my_package.kazan_support.signature"><code class="docutils literal notranslate"><span class="pre">signature()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#my_package.kazan_support.reusable"><code class="docutils literal notranslate"><span class="pre">reusable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#my_package.kazan_support.stamp"><code class="docutils literal notranslate"><span class="pre">stamp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#my_package.kazan_support.fetch_boundary"><code class="docutils literal notranslate"><span class="pre">fetch_boundary()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#my_package.kazan_support.fetch_features"><code class="docutils literal notranslate"><span class="pre">fetch_features()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#my_package.kazan_support.inspect_map"><code class="docutils literal notranslate"><span class="pre">inspect_map()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#my_package.kazan_support.plot_columns"><code class="docutils literal notranslate"><span class="pre">plot_columns()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#my_package.kazan_support.download_ready_graph"><code class="docutils literal notranslate"><span class="pre">download_ready_graph()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#my_package.kazan_support.prepare_drive_graph"><code class="docutils literal notranslate"><span class="pre">prepare_drive_graph()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#my_package.kazan_support.graph_coverage"><code class="docutils literal notranslate"><span class="pre">graph_coverage()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#my_package.kazan_support.numeric"><code class="docutils literal notranslate"><span class="pre">numeric()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#my_package.kazan_support.deduplicate_schools"><code class="docutils literal notranslate"><span class="pre">deduplicate_schools()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#my_package.kazan_support.provision_links_geojson"><code class="docutils literal notranslate"><span class="pre">provision_links_geojson()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="my_package.my_module.html">my_package.my_module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="my_package.overture_network.html">my_package.overture_network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="my_package.regional_osm.html">my_package.regional_osm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="my_package.routing_matrix.html">my_package.routing_matrix</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">MyPackage</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">API documentation</a></li>
+          <li class="breadcrumb-item"><a href="my_package.html">my_package</a></li>
+      <li class="breadcrumb-item active">my_package.kazan_support</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/api/_autosummary/my_package.kazan_support.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-my_package.kazan_support">
+<span id="my-package-kazan-support"></span><h1>my_package.kazan_support<a class="headerlink" href="#module-my_package.kazan_support" title="Permalink to this heading"></a></h1>
+<p>I/O and validation helpers. Importing this module never downloads city data.</p>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#my_package.kazan_support.clean_value" title="my_package.kazan_support.clean_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clean_value</span></code></a>(value)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#my_package.kazan_support.deduplicate_schools" title="my_package.kazan_support.deduplicate_schools"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deduplicate_schools</span></code></a>(schools)</p></td>
+<td><p>Merge obvious same-name OSM point/campus duplicates and preserve a reported capacity.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#my_package.kazan_support.download_ready_graph" title="my_package.kazan_support.download_ready_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_ready_graph</span></code></a>(raw_folder)</p></td>
+<td><p>Called only by a student's notebook cell.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#my_package.kazan_support.fetch_boundary" title="my_package.kazan_support.fetch_boundary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_boundary</span></code></a>(query, path)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#my_package.kazan_support.fetch_features" title="my_package.kazan_support.fetch_features"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_features</span></code></a>(boundary, tags, path, ...[, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#my_package.kazan_support.graph_coverage" title="my_package.kazan_support.graph_coverage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph_coverage</span></code></a>(blocks, graph, max_connector_m)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#my_package.kazan_support.inspect_map" title="my_package.kazan_support.inspect_map"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inspect_map</span></code></a>(layers[, output_path])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#my_package.kazan_support.land_use_label" title="my_package.kazan_support.land_use_label"><code class="xref py py-obj docutils literal notranslate"><span class="pre">land_use_label</span></code></a>(value)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#my_package.kazan_support.landuse_table_ru" title="my_package.kazan_support.landuse_table_ru"><code class="xref py py-obj docutils literal notranslate"><span class="pre">landuse_table_ru</span></code></a>(frame)</p></td>
+<td><p>A presentation copy; preserve the original fields for BlocksNet.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#my_package.kazan_support.layer_payload" title="my_package.kazan_support.layer_payload"><code class="xref py py-obj docutils literal notranslate"><span class="pre">layer_payload</span></code></a>(frame[, id_column])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#my_package.kazan_support.now" title="my_package.kazan_support.now"><code class="xref py py-obj docutils literal notranslate"><span class="pre">now</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#my_package.kazan_support.numeric" title="my_package.kazan_support.numeric"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numeric</span></code></a>(series)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#my_package.kazan_support.plot_columns" title="my_package.kazan_support.plot_columns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_columns</span></code></a>(frame, columns, title[, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#my_package.kazan_support.prepare_drive_graph" title="my_package.kazan_support.prepare_drive_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_drive_graph</span></code></a>(path, crs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#my_package.kazan_support.preview_saved_map" title="my_package.kazan_support.preview_saved_map"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preview_saved_map</span></code></a>(path)</p></td>
+<td><p>Display an existing HTML map in a notebook, without recomputing it.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#my_package.kazan_support.provision_links_geojson" title="my_package.kazan_support.provision_links_geojson"><code class="xref py py-obj docutils literal notranslate"><span class="pre">provision_links_geojson</span></code></a>(links, blocks)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#my_package.kazan_support.read_layer" title="my_package.kazan_support.read_layer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_layer</span></code></a>(path[, crs, id_column])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#my_package.kazan_support.reusable" title="my_package.kazan_support.reusable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reusable</span></code></a>(paths, dependencies, parameters[, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#my_package.kazan_support.save_layer" title="my_package.kazan_support.save_layer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_layer</span></code></a>(frame, path[, id_column])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#my_package.kazan_support.signature" title="my_package.kazan_support.signature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">signature</span></code></a>(dependencies, parameters)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#my_package.kazan_support.source_note" title="my_package.kazan_support.source_note"><code class="xref py py-obj docutils literal notranslate"><span class="pre">source_note</span></code></a>(path, **information)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#my_package.kazan_support.stamp" title="my_package.kazan_support.stamp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stamp</span></code></a>(paths, dependencies, parameters)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#my_package.kazan_support.write_json" title="my_package.kazan_support.write_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_json</span></code></a>(value, path)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Exceptions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#my_package.kazan_support.OverpassUnavailable" title="my_package.kazan_support.OverpassUnavailable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OverpassUnavailable</span></code></a></p></td>
+<td><p>An unavailable or incomplete response must never become an empty map.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="my_package.kazan_support.land_use_label">
+<span class="sig-prename descclassname"><span class="pre">my_package.kazan_support.</span></span><span class="sig-name descname"><span class="pre">land_use_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/my_package/kazan_support.html#land_use_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#my_package.kazan_support.land_use_label" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="my_package.kazan_support.landuse_table_ru">
+<span class="sig-prename descclassname"><span class="pre">my_package.kazan_support.</span></span><span class="sig-name descname"><span class="pre">landuse_table_ru</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/my_package/kazan_support.html#landuse_table_ru"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#my_package.kazan_support.landuse_table_ru" title="Permalink to this definition"></a></dt>
+<dd><p>A presentation copy; preserve the original fields for BlocksNet.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="my_package.kazan_support.preview_saved_map">
+<span class="sig-prename descclassname"><span class="pre">my_package.kazan_support.</span></span><span class="sig-name descname"><span class="pre">preview_saved_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/my_package/kazan_support.html#preview_saved_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#my_package.kazan_support.preview_saved_map" title="Permalink to this definition"></a></dt>
+<dd><p>Display an existing HTML map in a notebook, without recomputing it.</p>
+<p>A loopback-only server gives the iframe a normal HTTP origin. Its daemon
+thread lasts for this Python kernel; the exported HTML stays independent.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="my_package.kazan_support.OverpassUnavailable">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">my_package.kazan_support.</span></span><span class="sig-name descname"><span class="pre">OverpassUnavailable</span></span><a class="reference internal" href="../../_modules/my_package/kazan_support.html#OverpassUnavailable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#my_package.kazan_support.OverpassUnavailable" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></p>
+<p>An unavailable or incomplete response must never become an empty map.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="my_package.kazan_support.now">
+<span class="sig-prename descclassname"><span class="pre">my_package.kazan_support.</span></span><span class="sig-name descname"><span class="pre">now</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/my_package/kazan_support.html#now"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#my_package.kazan_support.now" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="my_package.kazan_support.write_json">
+<span class="sig-prename descclassname"><span class="pre">my_package.kazan_support.</span></span><span class="sig-name descname"><span class="pre">write_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/my_package/kazan_support.html#write_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#my_package.kazan_support.write_json" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="my_package.kazan_support.clean_value">
+<span class="sig-prename descclassname"><span class="pre">my_package.kazan_support.</span></span><span class="sig-name descname"><span class="pre">clean_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/my_package/kazan_support.html#clean_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#my_package.kazan_support.clean_value" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="my_package.kazan_support.layer_payload">
+<span class="sig-prename descclassname"><span class="pre">my_package.kazan_support.</span></span><span class="sig-name descname"><span class="pre">layer_payload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/my_package/kazan_support.html#layer_payload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#my_package.kazan_support.layer_payload" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="my_package.kazan_support.save_layer">
+<span class="sig-prename descclassname"><span class="pre">my_package.kazan_support.</span></span><span class="sig-name descname"><span class="pre">save_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/my_package/kazan_support.html#save_layer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#my_package.kazan_support.save_layer" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="my_package.kazan_support.read_layer">
+<span class="sig-prename descclassname"><span class="pre">my_package.kazan_support.</span></span><span class="sig-name descname"><span class="pre">read_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/my_package/kazan_support.html#read_layer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#my_package.kazan_support.read_layer" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="my_package.kazan_support.source_note">
+<span class="sig-prename descclassname"><span class="pre">my_package.kazan_support.</span></span><span class="sig-name descname"><span class="pre">source_note</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">information</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/my_package/kazan_support.html#source_note"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#my_package.kazan_support.source_note" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="my_package.kazan_support.signature">
+<span class="sig-prename descclassname"><span class="pre">my_package.kazan_support.</span></span><span class="sig-name descname"><span class="pre">signature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dependencies</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/my_package/kazan_support.html#signature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#my_package.kazan_support.signature" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="my_package.kazan_support.reusable">
+<span class="sig-prename descclassname"><span class="pre">my_package.kazan_support.</span></span><span class="sig-name descname"><span class="pre">reusable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dependencies</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/my_package/kazan_support.html#reusable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#my_package.kazan_support.reusable" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="my_package.kazan_support.stamp">
+<span class="sig-prename descclassname"><span class="pre">my_package.kazan_support.</span></span><span class="sig-name descname"><span class="pre">stamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dependencies</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/my_package/kazan_support.html#stamp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#my_package.kazan_support.stamp" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="my_package.kazan_support.fetch_boundary">
+<span class="sig-prename descclassname"><span class="pre">my_package.kazan_support.</span></span><span class="sig-name descname"><span class="pre">fetch_boundary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/my_package/kazan_support.html#fetch_boundary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#my_package.kazan_support.fetch_boundary" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="my_package.kazan_support.fetch_features">
+<span class="sig-prename descclassname"><span class="pre">my_package.kazan_support.</span></span><span class="sig-name descname"><span class="pre">fetch_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">boundary</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_columns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry_types</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_empty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/my_package/kazan_support.html#fetch_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#my_package.kazan_support.fetch_features" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="my_package.kazan_support.inspect_map">
+<span class="sig-prename descclassname"><span class="pre">my_package.kazan_support.</span></span><span class="sig-name descname"><span class="pre">inspect_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/my_package/kazan_support.html#inspect_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#my_package.kazan_support.inspect_map" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="my_package.kazan_support.plot_columns">
+<span class="sig-prename descclassname"><span class="pre">my_package.kazan_support.</span></span><span class="sig-name descname"><span class="pre">plot_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/my_package/kazan_support.html#plot_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#my_package.kazan_support.plot_columns" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="my_package.kazan_support.download_ready_graph">
+<span class="sig-prename descclassname"><span class="pre">my_package.kazan_support.</span></span><span class="sig-name descname"><span class="pre">download_ready_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/my_package/kazan_support.html#download_ready_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#my_package.kazan_support.download_ready_graph" title="Permalink to this definition"></a></dt>
+<dd><p>Called only by a student’s notebook cell. Downloads an existing graph, never builds one.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="my_package.kazan_support.prepare_drive_graph">
+<span class="sig-prename descclassname"><span class="pre">my_package.kazan_support.</span></span><span class="sig-name descname"><span class="pre">prepare_drive_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/my_package/kazan_support.html#prepare_drive_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#my_package.kazan_support.prepare_drive_graph" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="my_package.kazan_support.graph_coverage">
+<span class="sig-prename descclassname"><span class="pre">my_package.kazan_support.</span></span><span class="sig-name descname"><span class="pre">graph_coverage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_connector_m</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/my_package/kazan_support.html#graph_coverage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#my_package.kazan_support.graph_coverage" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="my_package.kazan_support.numeric">
+<span class="sig-prename descclassname"><span class="pre">my_package.kazan_support.</span></span><span class="sig-name descname"><span class="pre">numeric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/my_package/kazan_support.html#numeric"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#my_package.kazan_support.numeric" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="my_package.kazan_support.deduplicate_schools">
+<span class="sig-prename descclassname"><span class="pre">my_package.kazan_support.</span></span><span class="sig-name descname"><span class="pre">deduplicate_schools</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schools</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/my_package/kazan_support.html#deduplicate_schools"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#my_package.kazan_support.deduplicate_schools" title="Permalink to this definition"></a></dt>
+<dd><p>Merge obvious same-name OSM point/campus duplicates and preserve a reported capacity.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="my_package.kazan_support.provision_links_geojson">
+<span class="sig-prename descclassname"><span class="pre">my_package.kazan_support.</span></span><span class="sig-name descname"><span class="pre">provision_links_geojson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">links</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blocks</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/my_package/kazan_support.html#provision_links_geojson"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#my_package.kazan_support.provision_links_geojson" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="my_package.dashboard_builder.html" class="btn btn-neutral float-left" title="my_package.dashboard_builder" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="my_package.my_module.html" class="btn btn-neutral float-right" title="my_package.my_module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024-2026.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

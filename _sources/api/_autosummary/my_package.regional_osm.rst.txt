@@ -1,0 +1,32 @@
+my\_package.regional\_osm
+=========================
+
+.. automodule:: my_package.regional_osm
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      download_extract
+      extract_city_groups
+      fetch_regional_features
+      file_md5
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

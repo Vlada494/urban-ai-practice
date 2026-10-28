@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>my_package.regional_osm &mdash; MyPackage 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            MyPackage
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/index.html">Гайд по использованию шаблона</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">MyPackage</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">my_package.regional_osm</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for my_package.regional_osm</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Read a cached regional OSM extract. Downloads run only when called by a cell."""</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hashlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">md5</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">geopandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">osmium</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">shapely</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_wkb</span><span class="p">,</span> <span class="n">make_valid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">shapely.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Point</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">shapely.prepared</span><span class="w"> </span><span class="kn">import</span> <span class="n">prep</span>
+
+<span class="n">EXTRACT_URL</span> <span class="o">=</span> <span class="s1">'https://download.openstreetmap.fr/extracts/russia/volga_federal_district/tatarstan_republic-latest.osm.pbf'</span>
+<span class="n">CHECKSUM_URL</span> <span class="o">=</span> <span class="n">EXTRACT_URL</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'-latest.osm.pbf'</span><span class="p">,</span> <span class="s1">'.osm.pbf.md5'</span><span class="p">)</span>
+<span class="n">FIELDS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'osm_type'</span><span class="p">,</span> <span class="s1">'osm_id'</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">,</span> <span class="s1">'landuse'</span><span class="p">,</span> <span class="s1">'building'</span><span class="p">,</span> <span class="s1">'building:levels'</span><span class="p">,</span> <span class="s1">'population'</span><span class="p">,</span> <span class="s1">'amenity'</span><span class="p">,</span> <span class="s1">'capacity'</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="file_md5"><a class="viewcode-back" href="../../api/_autosummary/my_package.regional_osm.html#my_package.regional_osm.file_md5">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">file_md5</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="n">digest</span> <span class="o">=</span> <span class="n">md5</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">'rb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">),</span> <span class="sa">b</span><span class="s1">''</span><span class="p">):</span>
+            <span class="n">digest</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">digest</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="download_extract"><a class="viewcode-back" href="../../api/_autosummary/my_package.regional_osm.html#my_package.regional_osm.download_extract">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">download_extract</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Fetch once, resume interrupted transfers, and verify the publisher's MD5."""</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.kazan_support</span><span class="w"> </span><span class="kn">import</span> <span class="n">now</span><span class="p">,</span> <span class="n">write_json</span>
+    <span class="n">folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
+    <span class="n">folder</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">folder</span><span class="o">/</span><span class="s1">'tatarstan_republic.osm.pbf'</span>
+    <span class="n">note_path</span> <span class="o">=</span> <span class="n">folder</span><span class="o">/</span><span class="s1">'tatarstan_republic.download.json'</span>
+    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="n">note_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">note</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">note_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">file_md5</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">!=</span> <span class="n">note</span><span class="p">[</span><span class="s1">'md5'</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Сохранённый PBF не прошёл проверку целостности. Покажи эту ошибку в чате.'</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'Используем уже скачанную выгрузку Татарстана.'</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">path</span><span class="p">,</span> <span class="n">note</span>
+
+    <span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">'User-Agent'</span><span class="p">:</span><span class="s1">'UrbanAIPractice/1.0 (educational OSM processing)'</span><span class="p">,</span> <span class="s1">'Accept-Encoding'</span><span class="p">:</span><span class="s1">'identity'</span><span class="p">})</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">checksum_response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CHECKSUM_URL</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">30</span><span class="p">))</span>
+        <span class="n">checksum_response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="n">checksum_response</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="s1">'[0-9a-f]</span><span class="si">{32}</span><span class="s1">'</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Источник не вернул контрольную сумму PBF. Файл не загружен.'</span><span class="p">)</span>
+        <span class="n">part</span> <span class="o">=</span> <span class="n">folder</span><span class="o">/</span><span class="s1">'tatarstan_republic.osm.pbf.part'</span>
+        <span class="n">part_note</span> <span class="o">=</span> <span class="n">folder</span><span class="o">/</span><span class="s1">'tatarstan_republic.part.json'</span>
+        <span class="k">if</span> <span class="n">part</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">part_note</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">or</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">part_note</span><span class="o">.</span><span class="n">read_text</span><span class="p">())[</span><span class="s1">'md5'</span><span class="p">]</span><span class="o">!=</span><span class="n">expected</span><span class="p">):</span>
+            <span class="n">part</span><span class="o">.</span><span class="n">write_bytes</span><span class="p">(</span><span class="sa">b</span><span class="s1">''</span><span class="p">)</span>  <span class="c1"># only this downloader's incomplete temporary file</span>
+        <span class="n">write_json</span><span class="p">({</span><span class="s1">'md5'</span><span class="p">:</span><span class="n">expected</span><span class="p">},</span> <span class="n">part_note</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span> <span class="k">if</span> <span class="n">part</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'Range'</span><span class="p">:</span><span class="sa">f</span><span class="s1">'bytes=</span><span class="si">{</span><span class="n">offset</span><span class="si">}</span><span class="s1">-'</span><span class="p">}</span> <span class="k">if</span> <span class="n">offset</span> <span class="k">else</span> <span class="p">{}</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">EXTRACT_URL</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">45</span><span class="p">))</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+                    <span class="c1"># An interrupted transfer may already have completed its bytes.</span>
+                    <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="o">==</span><span class="mi">416</span> <span class="ow">and</span> <span class="n">part</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="n">file_md5</span><span class="p">(</span><span class="n">part</span><span class="p">)</span><span class="o">==</span><span class="n">expected</span><span class="p">:</span>
+                        <span class="n">last_modified</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+                        <span class="n">resumed</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="o">==</span><span class="mi">206</span> <span class="ow">and</span> <span class="n">offset</span><span class="o">&gt;</span><span class="mi">0</span>
+                        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="o">==</span><span class="mi">206</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'Content-Range'</span><span class="p">,</span><span class="s1">''</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">f</span><span class="s1">'bytes </span><span class="si">{</span><span class="n">offset</span><span class="si">}</span><span class="s1">-'</span><span class="p">):</span>
+                            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Источник вернул неправильный диапазон байтов.'</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">resumed</span><span class="p">:</span>
+                            <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="n">length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'Content-Length'</span><span class="p">,</span><span class="s1">'0'</span><span class="p">))</span>
+                        <span class="n">total</span> <span class="o">=</span> <span class="n">offset</span><span class="o">+</span><span class="n">length</span>
+                        <span class="n">current</span> <span class="o">=</span> <span class="n">offset</span>
+                        <span class="n">next_progress</span> <span class="o">=</span> <span class="n">current</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s1">'Скачиваем готовый файл Татарстана (около 96 МБ).'</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                        <span class="k">with</span> <span class="n">part</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">'ab'</span> <span class="k">if</span> <span class="n">resumed</span> <span class="k">else</span> <span class="s1">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+                            <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">iter_content</span><span class="p">(</span><span class="n">chunk_size</span><span class="o">=</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">):</span>
+                                <span class="k">if</span> <span class="ow">not</span> <span class="n">chunk</span><span class="p">:</span>
+                                    <span class="k">continue</span>
+                                <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+                                <span class="n">current</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+                                <span class="k">if</span> <span class="n">current</span><span class="o">&gt;=</span><span class="n">next_progress</span><span class="p">:</span>
+                                    <span class="n">tail</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">' / </span><span class="si">{</span><span class="n">total</span><span class="o">/</span><span class="mf">1e6</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1"> МБ'</span> <span class="k">if</span> <span class="n">total</span> <span class="k">else</span> <span class="s1">' МБ'</span>
+                                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'  Получено </span><span class="si">{</span><span class="n">current</span><span class="o">/</span><span class="mf">1e6</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1">'</span><span class="o">+</span><span class="n">tail</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                                    <span class="n">next_progress</span> <span class="o">=</span> <span class="n">current</span><span class="o">+</span><span class="mi">5</span><span class="o">*</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span>
+                        <span class="n">last_modified</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'Last-Modified'</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">file_md5</span><span class="p">(</span><span class="n">part</span><span class="p">)</span><span class="o">!=</span><span class="n">expected</span><span class="p">:</span>
+                    <span class="c1"># Keep a bad transfer for diagnosis, but never parse it as OSM.</span>
+                    <span class="n">part</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">folder</span><span class="o">/</span><span class="sa">f</span><span class="s1">'tatarstan-bad-</span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span><span class="si">}</span><span class="s1">.pbf.part'</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Контрольная сумма не совпала. Повтори ячейку: повреждённый файл не использован.'</span><span class="p">)</span>
+                <span class="n">part</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                <span class="n">note</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'source'</span><span class="p">:</span><span class="s1">'OpenStreetMap France regional extract'</span><span class="p">,</span> <span class="s1">'url'</span><span class="p">:</span><span class="n">EXTRACT_URL</span><span class="p">,</span>
+                        <span class="s1">'md5_url'</span><span class="p">:</span><span class="n">CHECKSUM_URL</span><span class="p">,</span> <span class="s1">'md5'</span><span class="p">:</span><span class="n">expected</span><span class="p">,</span> <span class="s1">'bytes'</span><span class="p">:</span><span class="n">path</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span><span class="p">,</span>
+                        <span class="s1">'last_modified'</span><span class="p">:</span><span class="n">last_modified</span><span class="p">,</span> <span class="s1">'retrieved_at_utc'</span><span class="p">:</span><span class="n">now</span><span class="p">()}</span>
+                <span class="n">write_json</span><span class="p">(</span><span class="n">note</span><span class="p">,</span> <span class="n">note_path</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">'Файл скачан; контрольная сумма совпала.'</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">path</span><span class="p">,</span> <span class="n">note</span>
+            <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">attempt</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Связь с хранилищем прервалась. Повтори эту ячейку: загрузка продолжится с сохранённого места.'</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">'Связь прервалась; сохраняем полученную часть и повторяем.'</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">attempt</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="extract_city_groups"><a class="viewcode-back" href="../../api/_autosummary/my_package.regional_osm.html#my_package.regional_osm.extract_city_groups">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">extract_city_groups</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">boundary</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Assemble complete OSM areas before filtering them to the city polygon."""</span>
+    <span class="n">polygon</span> <span class="o">=</span> <span class="n">boundary</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="mi">4326</span><span class="p">)</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">union_all</span><span class="p">()</span>
+    <span class="n">prepared</span> <span class="o">=</span> <span class="n">prep</span><span class="p">(</span><span class="n">polygon</span><span class="p">)</span>
+    <span class="n">factory</span> <span class="o">=</span> <span class="n">osmium</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">WKBFactory</span><span class="p">()</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'landuse'</span><span class="p">:[],</span> <span class="s1">'buildings'</span><span class="p">:[],</span> <span class="s1">'schools'</span><span class="p">:[]}</span>
+    <span class="n">quality</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'geometry_errors'</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s1">'geometry_error_examples'</span><span class="p">:[],</span> <span class="s1">'repaired_geometries'</span><span class="p">:</span><span class="mi">0</span><span class="p">}</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">CityHandler</span><span class="p">(</span><span class="n">osmium</span><span class="o">.</span><span class="n">SimpleHandler</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodes_seen</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodes_seen</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes_seen</span> <span class="o">%</span> <span class="mi">1000000</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'  Прочитано узлов региона: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes_seen</span><span class="si">:</span><span class="s1">,</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'amenity'</span><span class="p">)</span><span class="o">!=</span><span class="s1">'school'</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">valid</span><span class="p">():</span>
+                <span class="k">return</span>
+            <span class="n">geometry</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">lon</span><span class="p">,</span><span class="n">node</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">lat</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">prepared</span><span class="o">.</span><span class="n">intersects</span><span class="p">(</span><span class="n">geometry</span><span class="p">):</span>
+                <span class="n">tags</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">tags</span><span class="p">)</span>
+                <span class="n">rows</span><span class="p">[</span><span class="s1">'schools'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">FIELDS</span><span class="p">},</span>
+                    <span class="s1">'osm_type'</span><span class="p">:</span><span class="s1">'node'</span><span class="p">,</span> <span class="s1">'osm_id'</span><span class="p">:</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s1">'geometry'</span><span class="p">:</span><span class="n">geometry</span><span class="p">})</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">area</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">area</span><span class="p">):</span>
+            <span class="n">tags</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">area</span><span class="o">.</span><span class="n">tags</span><span class="p">)</span>
+            <span class="n">groups</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="s1">'landuse'</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">:</span>
+                <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'landuse'</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s1">'building'</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">:</span>
+                <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'buildings'</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'amenity'</span><span class="p">)</span><span class="o">==</span><span class="s1">'school'</span><span class="p">:</span>
+                <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'schools'</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">groups</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">geometry</span> <span class="o">=</span> <span class="n">from_wkb</span><span class="p">(</span><span class="n">factory</span><span class="o">.</span><span class="n">create_multipolygon</span><span class="p">(</span><span class="n">area</span><span class="p">))</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">geometry</span><span class="o">.</span><span class="n">is_valid</span><span class="p">:</span>
+                    <span class="n">geometry</span> <span class="o">=</span> <span class="n">make_valid</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span>
+                    <span class="n">quality</span><span class="p">[</span><span class="s1">'repaired_geometries'</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">geometry</span><span class="o">.</span><span class="n">geom_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'Polygon'</span><span class="p">,</span><span class="s1">'MultiPolygon'</span><span class="p">}</span> <span class="ow">or</span> <span class="n">geometry</span><span class="o">.</span><span class="n">is_empty</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Not a polygon after repair'</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">prepared</span><span class="o">.</span><span class="n">intersects</span><span class="p">(</span><span class="n">geometry</span><span class="p">):</span>
+                    <span class="k">return</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span><span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+                <span class="n">quality</span><span class="p">[</span><span class="s1">'geometry_errors'</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">quality</span><span class="p">[</span><span class="s1">'geometry_error_examples'</span><span class="p">])</span><span class="o">&lt;</span><span class="mi">10</span><span class="p">:</span>
+                    <span class="n">quality</span><span class="p">[</span><span class="s1">'geometry_error_examples'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">'id'</span><span class="p">:</span><span class="n">area</span><span class="o">.</span><span class="n">orig_id</span><span class="p">(),</span><span class="s1">'error'</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">)})</span>
+                <span class="k">return</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">FIELDS</span><span class="p">},</span> <span class="s1">'osm_type'</span><span class="p">:</span><span class="s1">'way'</span> <span class="k">if</span> <span class="n">area</span><span class="o">.</span><span class="n">from_way</span><span class="p">()</span> <span class="k">else</span> <span class="s1">'relation'</span><span class="p">,</span>
+                   <span class="s1">'osm_id'</span><span class="p">:</span><span class="n">area</span><span class="o">.</span><span class="n">orig_id</span><span class="p">(),</span> <span class="s1">'geometry'</span><span class="p">:</span><span class="n">geometry</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+                <span class="n">rows</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'Читаем локальный файл: готовим землепользование, здания и школы Казани.'</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'Файл читается дважды для сборки полигонов с отношениями и отверстиями.'</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">CityHandler</span><span class="p">()</span><span class="o">.</span><span class="n">apply_file</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">locations</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="s1">'flex_mem'</span><span class="p">)</span>
+    <span class="n">frames</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">objects</span> <span class="ow">in</span> <span class="n">rows</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">objects</span><span class="p">:</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">objects</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="s1">'geometry'</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="mi">4326</span><span class="p">)</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">([</span><span class="s1">'osm_type'</span><span class="p">,</span><span class="s1">'osm_id'</span><span class="p">])</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">({</span><span class="n">c</span><span class="p">:[]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">FIELDS</span><span class="p">},</span> <span class="n">geometry</span><span class="o">=</span><span class="n">gpd</span><span class="o">.</span><span class="n">GeoSeries</span><span class="p">([],</span><span class="n">crs</span><span class="o">=</span><span class="mi">4326</span><span class="p">))</span>
+        <span class="n">frames</span><span class="p">[</span><span class="n">group</span><span class="p">]</span> <span class="o">=</span> <span class="n">frame</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">frame</span><span class="p">),</span> <span class="s1">'объектов внутри/на границе Казани'</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">frames</span><span class="p">,</span> <span class="n">quality</span></div>
+
+
+<div class="viewcode-block" id="fetch_regional_features"><a class="viewcode-back" href="../../api/_autosummary/my_package.regional_osm.html#my_package.regional_osm.fetch_regional_features">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">fetch_regional_features</span><span class="p">(</span><span class="n">boundary</span><span class="p">,</span> <span class="n">tags</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">keep_columns</span><span class="p">,</span> <span class="n">geometry_types</span><span class="p">,</span> <span class="n">allow_empty</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.kazan_support</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_layer</span><span class="p">,</span> <span class="n">save_layer</span><span class="p">,</span> <span class="n">source_note</span><span class="p">,</span> <span class="n">OSM_CITATION</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">read_layer</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">extract</span><span class="p">,</span> <span class="n">note</span> <span class="o">=</span> <span class="n">download_extract</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">/</span><span class="s1">'extract_cache'</span><span class="p">)</span>
+    <span class="n">frames</span><span class="p">,</span> <span class="n">quality</span> <span class="o">=</span> <span class="n">extract_city_groups</span><span class="p">(</span><span class="n">extract</span><span class="p">,</span> <span class="n">boundary</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">frames</span><span class="p">[</span><span class="s1">'landuse'</span><span class="p">]</span><span class="o">.</span><span class="n">empty</span> <span class="ow">or</span> <span class="n">frames</span><span class="p">[</span><span class="s1">'buildings'</span><span class="p">]</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'В выгрузке не найдены здания или землепользование города. Слои не сохранены: нужна проверка источника/границы.'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">quality</span><span class="p">[</span><span class="s1">'geometry_errors'</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'Внимание: ошибки сборки геометрии по региону:'</span><span class="p">,</span><span class="n">quality</span><span class="p">[</span><span class="s1">'geometry_errors'</span><span class="p">],</span>
+              <span class="s1">'Подробности записаны в source.json; проверь качество перед выводами.'</span><span class="p">,</span><span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">destinations</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'landuse'</span><span class="p">:</span><span class="s1">'kazan_raw_landuse.geojson'</span><span class="p">,</span> <span class="s1">'buildings'</span><span class="p">:</span><span class="s1">'kazan_raw_buildings.geojson'</span><span class="p">,</span>
+                    <span class="s1">'schools'</span><span class="p">:</span><span class="s1">'kazan_raw_schools.geojson'</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">destinations</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">destination</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">/</span><span class="n">filename</span>
+        <span class="k">if</span> <span class="n">destination</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">continue</span>
+        <span class="n">staged</span> <span class="o">=</span> <span class="n">destination</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span><span class="n">destination</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="s1">'.writing'</span><span class="p">)</span>
+        <span class="n">save_layer</span><span class="p">(</span><span class="n">frames</span><span class="p">[</span><span class="n">group</span><span class="p">],</span> <span class="n">staged</span><span class="p">)</span>
+        <span class="n">staged</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">destination</span><span class="p">)</span>
+        <span class="n">source_note</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">'OpenStreetMap / OpenStreetMap France regional PBF'</span><span class="p">,</span>
+                    <span class="n">extract</span><span class="o">=</span><span class="n">note</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">frames</span><span class="p">[</span><span class="n">group</span><span class="p">]),</span> <span class="n">group</span><span class="o">=</span><span class="n">group</span><span class="p">,</span>
+                    <span class="n">boundary_filter</span><span class="o">=</span><span class="s1">'Full geometry intersects saved Kazan boundary'</span><span class="p">,</span>
+                    <span class="n">geometry_quality_for_region</span><span class="o">=</span><span class="n">quality</span><span class="p">,</span> <span class="n">attribution</span><span class="o">=</span><span class="n">OSM_CITATION</span><span class="p">)</span>
+    <span class="n">frame</span> <span class="o">=</span> <span class="n">read_layer</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">frame</span> <span class="o">=</span> <span class="n">frame</span><span class="p">[</span><span class="n">frame</span><span class="o">.</span><span class="n">geom_type</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">geometry_types</span><span class="p">)]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">keep_columns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">column</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">frame</span><span class="p">:</span>
+            <span class="n">frame</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">frame</span><span class="o">.</span><span class="n">empty</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">allow_empty</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Не найдены объекты для </span><span class="si">{</span><span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">. Нужна проверка данных.'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">frame</span><span class="p">[[</span><span class="o">*</span><span class="n">keep_columns</span><span class="p">,</span><span class="s1">'geometry'</span><span class="p">]]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024-2026.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
