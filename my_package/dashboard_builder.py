@@ -215,6 +215,7 @@ def main():
       '__LEAFLET_JS__':(ASSETS/'leaflet.js').read_text(encoding='utf-8'),'__PAYLOAD__':packed,
       '__CHARTS__':''.join(f'<article class="chart-card"><h3>{escape(c["title"])}</h3><p>{escape(c["caption"])}</p>{c["svg"]}</article>' for c in charts)}
     for key,value in replacements.items(): template=template.replace(key,value)
+    template='\n'.join(line.rstrip() for line in template.splitlines())+'\n'
     args.output.parent.mkdir(parents=True,exist_ok=True); args.output.write_text(template,encoding='utf-8')
     if args.output.stat().st_size>20_000_000: raise ValueError('HTML превышает лимит 20 МБ формы сдачи.')
     if args.output.resolve()==(ROOT/'dashboard.html').resolve():
