@@ -18,6 +18,19 @@
 Просмотр и сборка
 ----------------
 
+Публикация интерактивной карты в GitHub Pages
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+В настройках репозитория откройте Settings → Pages. В разделе Build and
+deployment выберите Deploy from a branch, ветку main и папку /docs, затем Save.
+Подготовленный docs/index.html — копия готового dashboard.html; Python на
+сервере не запускается. После успешной публикации адрес карты:
+https://vlada494.github.io/urban-ai-practice/
+
+Карта при обычном открытии файла HTML на github.com не исполняется.
+Для интерактивного просмотра используйте GitHub Pages либо скачайте HTML.
+Пересборка make_dashboard.py обновляет и dashboard.html, и docs/index.html.
+
 Откройте dashboard.html двойным щелчком или OPEN_DASHBOARD.cmd.
 Карта кварталов, показатели, графики и Leaflet находятся внутри HTML.
 Для подложки OpenStreetMap нужен интернет.

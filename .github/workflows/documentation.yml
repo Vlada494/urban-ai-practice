@@ -1,27 +1,22 @@
-name: Documentation
+name: Sphinx documentation (manual)
 
+# The homework dashboard is published from main /docs via GitHub Pages.
+# Keep the inherited Sphinx documentation available as a manual build.
 on:
-  push:
-    branches:
-      - main
-      - develop
-  pull_request:
-    branches:
-      - main
-      - develop
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   docs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.10"]
+        python-version: ["3.12"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install pandoc
@@ -35,11 +30,3 @@ jobs:
       - name: Sphinx build
         run: |
           sphinx-build docs/source docs/build
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        with:
-          publish_branch: documentation
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/build/
-          force_orphan: true

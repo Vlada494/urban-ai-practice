@@ -24,8 +24,8 @@ install-dev: # установка зависимостей для разрабо
 install-docs: # установка зависимостей для тестирования
 	pip install -e '.[docs]'
 
-install-test: # установка зависимостей для сборки документации
-	pip install -e '.[test]'
+install-test: # установка зависимостей для тестирования
+	python -m pip install -e '.[tests]'
 
 # building the package
 
@@ -37,8 +37,12 @@ clean:
 
 # testing
 
+.PHONY: test tests tests-cov install-test
+
+test: tests
+
 tests: # тестирование
-	pytest ${TEST_DIR}
+	python -m pytest ${TEST_DIR}
 
 tests-cov: # тестирование с выводом процента покрытия кода тестами
 	pytest ${TEST_DIR} --cov

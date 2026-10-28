@@ -217,6 +217,11 @@ def main():
     for key,value in replacements.items(): template=template.replace(key,value)
     args.output.parent.mkdir(parents=True,exist_ok=True); args.output.write_text(template,encoding='utf-8')
     if args.output.stat().st_size>20_000_000: raise ValueError('HTML превышает лимит 20 МБ формы сдачи.')
+    if args.output.resolve()==(ROOT/'dashboard.html').resolve():
+        site=ROOT/'docs'
+        site.mkdir(exist_ok=True)
+        (site/'index.html').write_text(template,encoding='utf-8')
+        (site/'.nojekyll').touch()
     (ROOT/'CONCLUSIONS.txt').write_text('КАЗАНЬ — ВЫВОДЫ ПО СОХРАНЁННЫМ РЕЗУЛЬТАТАМ\n\n'
         +'\n\n'.join(f'{i+1}. {text}' for i,text in enumerate(findings))+'\n',encoding='utf-8')
     (ROOT/'dashboard_summary.json').write_text(json.dumps({k:payload[k] for k in ['headline','summary','findings','source_files']},ensure_ascii=False,indent=2),encoding='utf-8')
