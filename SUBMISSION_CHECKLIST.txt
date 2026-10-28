@@ -1,0 +1,43 @@
+ДЗ 1 — КАЗАНЬ: СООТВЕТСТВИЕ ТРЕБОВАНИЯМ ПРЕПОДАВАТЕЛЯ
+
+Репозиторий проекта (ветка main):
+https://github.com/Vlada494/urban-ai-practice
+
+1. Ноутбук с выполненными расчётами, планом, запросами, выводами и повторным запуском:
+   examples/kazan_homework.ipynb — все 26 ячеек кода выполнены, ошибок в выводах нет.
+
+2. Отдельный Python-файл создания страницы:
+   make_dashboard.py; реализация — my_package/dashboard_builder.py.
+   Используются только сохранённые данные, расчёты BlocksNet не повторяются.
+
+3. GeoJSON:
+   examples/data/kazan_blocks_final.geojson и остальные слои в examples/data.
+   Итоговый слой содержит все 5159 кварталов и рассчитанные показатели.
+
+4. Готовый HTML:
+   dashboard.html — карта, графики, таблицы всех 8 групп и выводы, менее 20 МБ.
+   Версия для GitHub Pages: docs/index.html.
+   Посмотреть карту: https://vlada494.github.io/urban-ai-practice/
+
+5. Зависимости:
+   pyproject.toml и requirements-lock.txt; Python 3.12, BlocksNet 1.0.0a9.
+
+6. Большие данные:
+   https://github.com/Vlada494/urban-ai-practice/releases/tag/homework-1
+   Файл kazan_homework_complete.zip. Распаковать папку urban-ai-practice.
+   Если проект уже скачан из GitHub, скопировать из архива содержимое examples/data
+   в examples/data своего проекта с сохранением вложенных папок, включая overture.
+   Полная матрица: examples/data/kazan_acc_mx.parquet.
+   Готовый граф: examples/data/kazan_overture_drive.graphml.
+   Исходные и итоговые GeoJSON также входят в архив.
+
+7. Проверки:
+   Исправлены команда make test, установка тестовых зависимостей и версия Python.
+   Автоматические тесты и публикация карты проверяются на последнем коммите main.
+   Старый неуспешный запуск остаётся в истории и не описывает текущую версию.
+
+ОТПРАВКА ПРЕПОДАВАТЕЛЮ
+https://forms.yandex.ru/cloud/6ad22113c45c078cec3c7c7d/
+Указать ФИО, прикрепить dashboard.html, вставить ссылку на репозиторий проекта.
+В поле обратной связи можно дополнительно вставить ссылку на карту.
+Факт сдачи подтверждается только сообщением Яндекс Форм об успешной отправке.

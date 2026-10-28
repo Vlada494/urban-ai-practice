@@ -12,11 +12,15 @@ def main():
     source_names=['make_dashboard.py','prepare_submission.py','dashboard.html',
         'CONCLUSIONS.txt','SUBMISSION.txt','README.rst','pyproject.toml',
         'requirements-lock.txt','LICENSE','AGENTS.md','OPEN_DASHBOARD.cmd',
+        'Makefile','.gitignore','dashboard_summary.json','SUBMISSION_CHECKLIST.txt',
+        'docs/index.html','docs/.nojekyll',
         'examples/kazan_homework.ipynb','examples/kazan_overview.png']
     files=[ROOT/name for name in source_names if (ROOT/name).is_file()]
     files += [p for p in (ROOT/'my_package').rglob('*') if p.is_file()
               and '__pycache__' not in p.parts and p.suffix!='.pyc']
     files += [p for p in (ROOT/'references').glob('*.ipynb')]
+    files += [p for p in (ROOT/'.github/workflows').glob('*.yml')]
+    files += [p for p in (ROOT/'tests').glob('*.py')]
     # Include the prepared ready graph and its downloaded source so release
     # expiry cannot prevent reproduction. Exclude redundant huge matrix CSV,
     # rejected old graph, old preview HTML and the regional download cache.

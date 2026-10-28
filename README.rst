@@ -5,6 +5,22 @@
 для 5159 кварталов. Исходный шаблон проекта — python-package-boilerplate;
 его лицензия и история сохранены.
 
+.. image:: https://github.com/Vlada494/urban-ai-practice/actions/workflows/tests.yml/badge.svg?branch=main
+   :target: https://github.com/Vlada494/urban-ai-practice/actions/workflows/tests.yml
+   :alt: Результат текущей проверки main
+
+Где посмотреть результат
+------------------------
+
+* Интерактивная карта: https://vlada494.github.io/urban-ai-practice/
+* Выполненный ноутбук: examples/kazan_homework.ipynb.
+* HTML для прикрепления в форме: dashboard.html.
+* Все данные: https://github.com/Vlada494/urban-ai-practice/releases/tag/homework-1
+
+.. image:: examples/kazan_overview.png
+   :alt: Обзор четырёх сохранённых показателей Казани
+   :width: 900
+
 Готовые результаты
 ------------------
 
@@ -21,10 +37,8 @@
 Публикация интерактивной карты в GitHub Pages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-В настройках репозитория откройте Settings → Pages. В разделе Build and
-deployment выберите Deploy from a branch, ветку main и папку /docs, затем Save.
-Подготовленный docs/index.html — копия готового dashboard.html; Python на
-сервере не запускается. После успешной публикации адрес карты:
+Карта опубликована из ветки main, папки /docs. Готовый docs/index.html —
+копия dashboard.html; Python на сервере не запускается. Открыть карту:
 https://vlada494.github.io/urban-ai-practice/
 
 Карта при обычном открытии файла HTML на github.com не исполняется.
@@ -58,9 +72,17 @@ Overture; источник не исчезнет вместе со старым 
 Архив не содержит .venv и временных кэшей. Контрольные суммы — manifest.json.
 Крупная копия матрицы CSV исключена из архива как дубликат Parquet.
 
-ВНИМАНИЕ ДЛЯ ПУБЛИКАЦИИ: укажите здесь проверенную ссылку на архив данных
-после загрузки в релиз GitHub или другое хранилище. Сейчас данные доступны
-локально в полном составе; публичной ссылки на архив ещё нет.
+Архив данных опубликован вместе с проектом:
+https://github.com/Vlada494/urban-ai-practice/releases/tag/homework-1
+
+Скачайте kazan_homework_complete.zip. После распаковки внутри будет папка
+urban-ai-practice. Если проект уже клонирован, скопируйте из архива содержимое
+examples/data в examples/data вашего проекта, сохранив вложенные папки.
+Полная матрица лежит в examples/data/kazan_acc_mx.parquet, готовый граф —
+в examples/data/kazan_overture_drive.graphml, срезы Overture — в
+examples/data/overture. Исходные и итоговые GeoJSON находятся рядом.
+Архив содержит контрольные суммы submission_manifest.json.
+Полный список требований и путей: SUBMISSION_CHECKLIST.txt.
 
 Ограничения
 -----------
@@ -80,119 +102,10 @@ https://forms.yandex.ru/cloud/6ad22113c45c078cec3c7c7d/
 Прикрепляется отдельный dashboard.html размером менее 20 МБ. Нужны ФИО
 и ссылка на свой GitHub. Факт сдачи подтверждается ответом формы.
 
-Документация исходного шаблона
-============================
 
-Python package boilerplate (IDU) 
-================================
+Исходный шаблон
+----------------
 
-.. logo-start
-
-.. figure:: https://sun9-46.userapi.com/impf/aUFBStH0x_6jN9UhgwrKN1WN4hZ9Y2HMMrXT2w/NuzVobaGlZ0.jpg?size=1590x400&quality=95&crop=0,0,1878,472&sign=9d33baa41a86de35d951d4bbd8011994&type=cover_group
-   :alt: The Institute of Design and Urban Studies
-
-.. logo-end
-
-|Documentation Status| |PythonVersion| |Black|
-
-.. readme-start 
-
-Installation
-------------
-
-The library can be installed with ``pip``:
-
-::
-
-   pip install git+https://github.com/vasilstar97/python-package-boilerplate@main
-
-
-How to use
-----------
-
-Use the library by importing classes from ``my_package``:
-
-::
-
-   from my_package.my_module_1 import MyClass
-
-For more detailed use case see our `examples <#examples>`__.
-
-Data
-----
-
-All the required data is stored in `examples
-data folder <./examples/data>`__.
-
-Examples
---------
-
-Next examples will help one to get used to the library:
-
-1. Main `example <./examples/my_example.ipynb>`__ of the library.
-2. ...
-
-Documentation
--------------
-
-Detailed information and description of the library is available in
-`documentation <https://vasilstar97.github.io/python-package-boilerplate/>`__.
-
-Project Structure
------------------
-
-The latest version of the library is available in the ``main`` branch.
-
-The repository includes the following directories and modules:
-
--  `my_package <./my_package>`__
-   directory with the library code:
-
-   -  ...
-   -  ...
-
--  `tests <./tests>`__
-   ``pytest`` testing
--  `examples <./examples>`__
-   examples of how the library works
--  `docs <./docs>`__
-   documentation sources
-
-Developing
-----------
-
-...
-
-License
--------
-
-The project has `BSD-3-Clause license <./LICENSE>`__
-
-Acknowledgments
----------------
-
-...
-
-Contacts
---------
-
-You can contact me:
-
--  `Vasilii Starikov <https://t.me/vasilstar>`__ - assistant
-
-Also, you are welcomed to the `issues <./issues>`__ section!
-
-Publications
-------------
-
--  `My publication name from scholar or something <https://scholar.google.com/>`__
--  ...
-
-.. |Documentation Status| image:: https://github.com/vasilstar97/python-package-boilerplate/actions/workflows/documentation.yml/badge.svg?branch=main
-   :target: https://vasilstar97.github.io/python-package-boilerplate/
-.. |PythonVersion| image:: https://img.shields.io/badge/python-3.10-blue
-   :target: https://pypi.org/project/geopandas/
-.. |Black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
-   :target: https://github.com/psf/black
-
-.. readme-end
+Проект основан на шаблоне Vasilii Starikov:
+https://github.com/vasilstar97/python-package-boilerplate
+Лицензия BSD-3-Clause сохранена в LICENSE; история исходного проекта сохранена.
